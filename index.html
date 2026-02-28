@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth h-full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <title>Mindful Labs — CTO Recruitment Terminal</title>
+  <meta name="description" content="상담사는 오직 상담에만. 심리 상담 산업의 OS를 함께 만들 CTO를 찾습니다.">
+  <meta name="author" content="Mindful Labs">
+  <meta name="keywords" content="Mindful Labs,마인드풀랩스,CTO,채용,AI,심리상담,마음토스">
+  <meta property="og:title" content="Mindful Labs — CTO Recruitment Terminal">
+  <meta property="og:description" content="상담사는 오직 상담에만. 심리 상담 산업의 OS를 함께 만들 CTO를 찾습니다.">
+  <meta property="og:site_name" content="Mindful Labs">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Mindful Labs — CTO Recruitment Terminal">
+  <meta name="twitter:description" content="상담사는 오직 상담에만. 심리 상담 산업의 OS를 함께 만들 CTO를 찾습니다.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['JetBrains Mono', 'SF Mono', 'Consolas', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    ::-webkit-scrollbar { background: #0c0a09; width: 8px; }
+    ::-webkit-scrollbar-thumb { background: #525252; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #737373; }
+    ::selection { color: #f5f5f5; background: rgba(16, 185, 129, 0.25); }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .cursor-blink {
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes glow {
+      0%, 100% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.3); }
+      50% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.6); }
+    }
+
+    .cmd-clickable {
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+    .cmd-clickable:hover {
+      color: #67e8f9;
+      text-decoration: underline;
+    }
+
+    .apply-btn {
+      display: inline-block;
+      border: 1px solid #4ade80;
+      color: #4ade80;
+      padding: 8px 24px;
+      margin-top: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+    }
+    .apply-btn:hover {
+      background: #4ade80;
+      color: #0c0a09;
+      box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+    }
+
+    @keyframes progress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    /* Hide input caret and let custom cursor show */
+    #cmd-input { caret-color: transparent; }
+    #cmd-input:focus { outline: none; }
+  </style>
+</head>
+<body class="text-neutral-100 min-h-screen bg-stone-950 font-mono overflow-x-hidden">
+
+  <div class="relative flex h-screen min-h-screen flex-col overflow-hidden bg-stone-950 p-1.5 sm:p-2.5 text-sm leading-5 text-zinc-300 font-mono">
+    <div class="flex flex-1 flex-col overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900 shadow-[0_0_40px_10px_rgba(74,222,128,0.03),0_0_80px_40px_rgba(74,222,128,0.02)]">
+
+      <!-- Top bar -->
+      <div class="shrink-0 rounded-t-lg border-b border-zinc-800 bg-neutral-800">
+        <div class="mx-auto flex w-full max-w-4xl items-center justify-between px-4 sm:px-6 py-2">
+          <div class="flex items-center gap-x-3">
+            <div class="flex items-center gap-x-1.5">
+              <div class="h-3 w-3 rounded-full bg-red-400"></div>
+              <div class="h-3 w-3 rounded-full bg-amber-400"></div>
+              <div class="h-3 w-3 rounded-full bg-green-500"></div>
+            </div>
+            <span class="ml-2 text-xs sm:text-sm text-zinc-500">cto@mindfullabs — recruit-terminal-2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main content (scrollable) -->
+      <div id="terminal-output" class="flex-1 overflow-y-auto overflow-x-hidden">
+        <div class="mx-auto w-full max-w-4xl px-4 sm:px-6 pt-6 pb-4">
+          <div id="output-container" class="flex flex-col"></div>
+        </div>
+      </div>
+
+      <!-- Bottom status bar -->
+      <div class="shrink-0 border-t border-zinc-800 bg-zinc-900">
+        <div class="mx-auto flex w-full max-w-4xl items-center px-4 sm:px-6 py-1 text-xs text-neutral-600">
+          <div class="flex items-center gap-x-3">
+            <span>MEM: 48MB</span>
+            <span>CPU: 2%</span>
+          </div>
+          <div class="flex-1"></div>
+          <span class="text-neutral-600">Mindful Labs V2</span>
+        </div>
+      </div>
+
+      <!-- Input area -->
+      <div class="relative shrink-0 rounded-b-lg bg-zinc-900 border-t border-zinc-800">
+        <div class="mx-auto w-full max-w-4xl px-4 sm:px-6 py-2">
+          <div class="flex items-center">
+            <span class="text-green-400 mr-1">cto@mindfullabs</span><span class="text-zinc-500 mr-1">:</span><span class="text-blue-400 mr-1">~</span><span class="text-zinc-500 mr-1">$</span>
+            <div class="flex-1 relative flex items-center">
+              <input
+                id="cmd-input"
+                type="text"
+                class="w-full bg-transparent text-zinc-300 font-mono text-sm border-none p-0"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                disabled
+              >
+              <span id="input-cursor" class="cursor-blink inline-block w-[7px] h-[18px] bg-green-400 ml-0 absolute" style="left: 0;"></span>
+            </div>
+            <button id="run-btn" class="ml-3 flex h-7 w-7 items-center justify-center rounded-lg bg-green-500 hover:bg-green-400 transition-colors" title="실행" disabled>
+              <svg width="14" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 fill-none stroke-white">
+                <path d="M9 10l-5 5 5 5"></path>
+                <path d="M4 15h11a4 4 0 0 0 4-4V5"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+(function() {
+  // === DOM ===
+  const outputContainer = document.getElementById('output-container');
+  const terminalOutput = document.getElementById('terminal-output');
+  const cmdInput = document.getElementById('cmd-input');
+  const inputCursor = document.getElementById('input-cursor');
+  const runBtn = document.getElementById('run-btn');
+
+  let isTyping = false;
+  let commandQueue = [];
+
+  // === Utility: scroll to bottom ===
+  function scrollToBottom() {
+    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+  }
+
+  // === Utility: delay ===
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // === Cursor position update ===
+  function updateCursorPosition() {
+    const text = cmdInput.value;
+    // Create a temporary span to measure text width
+    const span = document.createElement('span');
+    span.style.fontFamily = "'JetBrains Mono', monospace";
+    span.style.fontSize = '14px';
+    span.style.visibility = 'hidden';
+    span.style.position = 'absolute';
+    span.style.whiteSpace = 'pre';
+    span.textContent = text;
+    document.body.appendChild(span);
+    const width = span.offsetWidth;
+    document.body.removeChild(span);
+    inputCursor.style.left = width + 'px';
+  }
+
+  // === Core: Type text character by character ===
+  async function typeText(element, text, speed = 30) {
+    for (let i = 0; i < text.length; i++) {
+      element.textContent += text[i];
+      scrollToBottom();
+      await delay(speed + Math.random() * 20);
+    }
+  }
+
+  // === Core: Add a line to terminal ===
+  function addLine(html, className = '') {
+    const div = document.createElement('div');
+    if (className) div.className = className;
+    div.innerHTML = html;
+    outputContainer.appendChild(div);
+    scrollToBottom();
+    return div;
+  }
+
+  // === Core: Add a line with typewriter effect ===
+  async function addTypedLine(text, className = '', speed = 30) {
+    const div = document.createElement('div');
+    if (className) div.className = className;
+    outputContainer.appendChild(div);
+    await typeText(div, text, speed);
+    scrollToBottom();
+    return div;
+  }
+
+  // === Core: Add spacer ===
+  function addSpacer(h = '12px') {
+    const div = document.createElement('div');
+    div.style.height = h;
+    outputContainer.appendChild(div);
+  }
+
+  // === Core: Add prompt line (shows what user typed) ===
+  function addPromptLine(cmd) {
+    addLine(
+      '<span class="text-green-400">cto@mindfullabs</span>' +
+      '<span class="text-zinc-500">:</span>' +
+      '<span class="text-blue-400">~</span>' +
+      '<span class="text-zinc-500">$ </span>' +
+      '<span class="text-zinc-300">' + escapeHtml(cmd) + '</span>'
+    );
+  }
+
+  // === Core: Add clickable command hint ===
+  function addCommandHint(text, cmd) {
+    const div = document.createElement('div');
+    div.className = 'text-zinc-500 mt-2';
+    div.innerHTML = '<span class="text-zinc-600">[hint]</span> ' + text + ' <span class="cmd-clickable text-cyan-400" data-cmd="' + escapeHtml(cmd) + '">' + escapeHtml(cmd) + '</span>';
+    outputContainer.appendChild(div);
+    scrollToBottom();
+  }
+
+  // === Escape HTML ===
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // === Type into input field (visual effect) ===
+  async function typeIntoInput(text) {
+    cmdInput.value = '';
+    updateCursorPosition();
+    for (let i = 0; i < text.length; i++) {
+      cmdInput.value += text[i];
+      updateCursorPosition();
+      await delay(50 + Math.random() * 30);
+    }
+    await delay(300);
+  }
+
+  // === Command click handler (event delegation) ===
+  outputContainer.addEventListener('click', async function(e) {
+    const clickable = e.target.closest('.cmd-clickable');
+    if (clickable && !isTyping) {
+      const cmd = clickable.dataset.cmd;
+      if (cmd) {
+        await typeIntoInput(cmd);
+        executeCommand(cmd);
+      }
+    }
+  });
+
+  // === Input handling ===
+  cmdInput.addEventListener('input', updateCursorPosition);
+  cmdInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !isTyping) {
+      const cmd = cmdInput.value.trim();
+      if (cmd) {
+        executeCommand(cmd);
+      }
+    }
+  });
+
+  runBtn.addEventListener('click', function() {
+    if (!isTyping) {
+      const cmd = cmdInput.value.trim();
+      if (cmd) {
+        executeCommand(cmd);
+      }
+    }
+  });
+
+  // === Enable input ===
+  function enableInput() {
+    cmdInput.disabled = false;
+    runBtn.disabled = false;
+    cmdInput.focus();
+    isTyping = false;
+  }
+
+  // === Disable input ===
+  function disableInput() {
+    cmdInput.disabled = true;
+    runBtn.disabled = true;
+    isTyping = true;
+  }
+
+  // === COMMAND DEFINITIONS ===
+
+  // --- Boot Sequence ---
+  async function bootSequence() {
+    disableInput();
+
+    await addTypedLine('[system] 접속 대기 중...', 'text-zinc-500', 40);
+    await delay(600);
+
+    addSpacer();
+    await addTypedLine('$ ssh cto@mindfullabs.ai', 'text-green-400', 45);
+    await delay(1000);
+
+    addSpacer();
+    await addTypedLine('[system] 연결 중... mindfullabs.ai...', 'text-zinc-500', 35);
+    await delay(800);
+
+    const connLine = addLine('<span class="text-green-500">✓</span> <span class="text-zinc-500">연결 완료</span> <span class="text-stone-500">(지연시간: 1ms)</span>');
+    await delay(400);
+
+    addSpacer();
+    await addTypedLine('[system] Mindful Labs V2 Terminal에 오신 것을 환영합니다.', 'text-zinc-500', 30);
+    await delay(300);
+
+    addSpacer();
+    addLine('<span class="text-zinc-600">사용 가능한 명령어를 보려면 </span><span class="cmd-clickable text-cyan-400" data-cmd="help">help</span><span class="text-zinc-600">를 입력하세요.</span>');
+    await delay(200);
+
+    addSpacer('20px');
+
+    enableInput();
+  }
+
+  // --- help ---
+  async function cmdHelp() {
+    disableInput();
+    addPromptLine('help');
+    addSpacer();
+
+    await addTypedLine('사용 가능한 명령어:', 'text-zinc-400', 25);
+    addSpacer('8px');
+
+    const commands = [
+      { cmd: 'cat vision.md', desc: '마인드풀랩스의 비전과 미션' },
+      { cmd: 'cat architecture.md', desc: 'CTO가 풀어야 할 기술적 도전' },
+      { cmd: 'cat whoami.md', desc: '우리가 찾는 사람' },
+      { cmd: './apply.sh', desc: '합류하기' },
+      { cmd: 'ls', desc: '파일 목록 보기' },
+      { cmd: 'clear', desc: '터미널 초기화' },
+    ];
+
+    for (const c of commands) {
+      const div = document.createElement('div');
+      div.className = 'flex items-start ml-2 mb-1';
+      div.innerHTML =
+        '<span class="cmd-clickable text-cyan-400 w-48 shrink-0" data-cmd="' + escapeHtml(c.cmd) + '">' + escapeHtml(c.cmd) + '</span>' +
+        '<span class="text-zinc-500">' + escapeHtml(c.desc) + '</span>';
+      outputContainer.appendChild(div);
+      scrollToBottom();
+      await delay(80);
+    }
+
+    addSpacer();
+    addLine('<span class="text-zinc-600">hint: try typing </span><span class="cmd-clickable text-amber-400" data-cmd="stack">\'stack\'</span>');
+
+    addSpacer('20px');
+    enableInput();
+  }
+
+  // --- ls ---
+  async function cmdLs() {
+    disableInput();
+    addPromptLine('ls');
+    addSpacer();
+
+    const files = [
+      { name: 'vision.md', color: 'text-green-400' },
+      { name: 'architecture.md', color: 'text-green-400' },
+      { name: 'whoami.md', color: 'text-green-400' },
+      { name: 'apply.sh', color: 'text-red-400' },
+    ];
+
+    let line = '<span class="text-zinc-500">total ' + files.length + '</span>';
+    addLine(line);
+    addSpacer('4px');
+
+    for (const f of files) {
+      const ext = f.name.endsWith('.sh') ? '-rwxr-xr-x' : '-rw-r--r--';
+      const div = document.createElement('div');
+      div.className = 'ml-2 mb-0.5';
+      div.innerHTML =
+        '<span class="text-zinc-600">' + ext + '  cto  </span>' +
+        '<span class="' + f.color + '">' + f.name + '</span>';
+      outputContainer.appendChild(div);
+      scrollToBottom();
+      await delay(100);
+    }
+
+    addSpacer('20px');
+    enableInput();
+  }
+
+  // --- clear ---
+  function cmdClear() {
+    outputContainer.innerHTML = '';
+    enableInput();
+  }
+
+  // --- cat vision.md ---
+  async function cmdVision() {
+    disableInput();
+    addPromptLine('cat vision.md');
+    addSpacer();
+
+    // ASCII Art
+    const asciiArt = [
+      '███╗   ███╗██╗███╗   ██╗██████╗ ███████╗██╗   ██╗██╗     ',
+      '████╗ ████║██║████╗  ██║██╔══██╗██╔════╝██║   ██║██║     ',
+      '██╔████╔██║██║██╔██╗ ██║██║  ██║█████╗  ██║   ██║██║     ',
+      '██║╚██╔╝██║██║██║╚██╗██║██║  ██║██╔══╝  ██║   ██║██║     ',
+      '██║ ╚═╝ ██║██║██║ ╚████║██████╔╝██║     ╚██████╔╝███████╗',
+      '╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝ ╚═╝      ╚═════╝ ╚══════╝',
+    ];
+    const asciiArt2 = [
+      '██╗      █████╗ ██████╗ ███████╗',
+      '██║     ██╔══██╗██╔══██╗██╔════╝',
+      '██║     ███████║██████╔╝███████╗',
+      '██║     ██╔══██║██╔══██╗╚════██║',
+      '███████╗██║  ██║██████╔╝███████║',
+      '╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝',
+    ];
+
+    const artContainer = document.createElement('div');
+    artContainer.className = 'overflow-x-hidden text-xs sm:text-sm text-green-400 font-mono leading-tight whitespace-pre';
+    outputContainer.appendChild(artContainer);
+
+    for (const line of asciiArt) {
+      const div = document.createElement('div');
+      div.className = 'overflow-x-hidden';
+      div.textContent = line;
+      artContainer.appendChild(div);
+      scrollToBottom();
+      await delay(60);
+    }
+
+    const artContainer2 = document.createElement('div');
+    artContainer2.className = 'overflow-x-hidden text-xs sm:text-sm text-green-400 font-mono leading-tight whitespace-pre mt-1';
+    outputContainer.appendChild(artContainer2);
+
+    for (const line of asciiArt2) {
+      const div = document.createElement('div');
+      div.className = 'overflow-x-hidden';
+      div.textContent = line;
+      artContainer2.appendChild(div);
+      scrollToBottom();
+      await delay(60);
+    }
+
+    addSpacer();
+
+    // Tagline box
+    const tagBox = document.createElement('div');
+    tagBox.className = 'self-start border-2 border-green-400 px-4 py-3 mb-4';
+    tagBox.innerHTML = '<div class="flex items-center gap-x-2 text-green-400"><span>✱</span><span>상담사는 오직 상담에만.</span></div>';
+    outputContainer.appendChild(tagBox);
+    scrollToBottom();
+    await delay(500);
+
+    addSpacer();
+
+    // Vision text
+    await addTypedLine('우리는 단순한 차트 기록 보조 도구를 만들지 않습니다.', 'text-zinc-300', 25);
+    addSpacer('8px');
+    await addTypedLine('일정, 결제, 심리검사 분석, 고객 관리(CRM)까지', 'text-zinc-300', 25);
+    await addTypedLine('상담소 운영의 A to Z를 완전히 자동화하는', 'text-zinc-300', 25);
+    addSpacer('4px');
+
+    const highlightLine = document.createElement('div');
+    highlightLine.className = 'text-green-400 font-bold text-base sm:text-lg my-2';
+    highlightLine.textContent = '';
+    outputContainer.appendChild(highlightLine);
+    await typeText(highlightLine, '심리 상담 산업의 운영체제(OS)를 구축합니다.', 35);
+    scrollToBottom();
+
+    addSpacer();
+
+    // Separator
+    addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');
+    addSpacer();
+
+    await addTypedLine('기술로 멘탈헬스케어 시장의 패러다임을 바꿀 준비가 되셨습니까?', 'text-cyan-400', 30);
+
+    addSpacer();
+    addCommandHint('다음:', 'cat architecture.md');
+    addSpacer('20px');
+    enableInput();
+  }
+
+  // --- cat architecture.md ---
+  async function cmdArchitecture() {
+    disableInput();
+    addPromptLine('cat architecture.md');
+    addSpacer();
+
+    addLine('<span class="text-green-400 font-bold text-base">═══ ARCHITECTURE.MD ═══</span>');
+    addSpacer();
+    await addTypedLine('CTO가 해결해야 할 핵심 기술 과제:', 'text-zinc-400', 25);
+    addSpacer();
+
+    // Challenge 1
+    addLine('<span class="text-red-400 font-bold">  [01] Full AI Agent Workflow</span>');
+    addSpacer('4px');
+    await addTypedLine('       단일 LLM 호출을 넘어,', 'text-zinc-300', 25);
+    await addTypedLine('       다중 AI 에이전트가 유기적으로 상호작용하는', 'text-zinc-300', 25);
+    await addTypedLine('       도메인 특화 자동화 인프라(Harness) 설계', 'text-zinc-300', 25);
+    addSpacer();
+
+    // Challenge 2
+    addLine('<span class="text-red-400 font-bold">  [02] Global Scale Architecture</span>');
+    addSpacer('4px');
+    await addTypedLine('       글로벌 진출을 대비한 무결점 보안 아키텍처 및', 'text-zinc-300', 25);
+    await addTypedLine('       다국어 지원 클라우드 시스템 확장', 'text-zinc-300', 25);
+    await addTypedLine('       (AWS, Supabase 연동)', 'text-zinc-500', 25);
+    addSpacer();
+
+    // Challenge 3
+    addLine('<span class="text-red-400 font-bold">  [03] Industry Standard Creation</span>');
+    addSpacer('4px');
+    await addTypedLine('       심리 상담 도메인에 최적화된', 'text-zinc-300', 25);
+    await addTypedLine('       워크플로우 자동화 파이프라인 구축', 'text-zinc-300', 25);
+    addSpacer();
+
+    // Separator
+    addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');
+    addSpacer();
+
+    const impactLine = document.createElement('div');
+    impactLine.className = 'text-cyan-400 font-bold';
+    impactLine.textContent = '';
+    outputContainer.appendChild(impactLine);
+    await typeText(impactLine, '당신이 짤 코드가 곧 심리 상담 업계의 새로운 글로벌 표준이 됩니다.', 35);
+    scrollToBottom();
+
+    addSpacer();
+    addCommandHint('다음:', 'cat whoami.md');
+    addSpacer('20px');
+    enableInput();
+  }
+
+  // --- cat whoami.md ---
+  async function cmdWhoami() {
+    disableInput();
+    addPromptLine('cat whoami.md');
+    addSpacer();
+
+    addLine('<span class="text-green-400 font-bold text-base">═══ WHOAMI.MD ═══</span>');
+    addSpacer();
+
+    // Looking for
+    addLine('<span class="text-emerald-400 font-bold">✓ 우리는 이런 분을 찾습니다:</span>');
+    addSpacer('8px');
+
+    const positives = [
+      '단순한 기능 구현이 아닌, 비즈니스 구조를 이해하고 시스템을 설계하는 아키텍트',
+      '복잡한 문제를 비동기 파이프라인과 워크플로우로 우아하게 풀어내는 분',
+      '주니어 팀원들을 이끌고 글로벌 스케일의 개발 문화를 함께 만들어갈 리더',
+    ];
+
+    for (const item of positives) {
+      const div = document.createElement('div');
+      div.className = 'ml-4 flex items-start gap-x-2 mb-1.5 text-zinc-300';
+      div.innerHTML = '<span class="shrink-0 text-emerald-400 mt-0.5">✓</span><span class="flex-1">' + escapeHtml(item) + '</span>';
+      outputContainer.appendChild(div);
+      scrollToBottom();
+      await delay(150);
+    }
+
+    addSpacer();
+    addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');
+    addSpacer();
+
+    // Not a fit
+    addLine('<span class="text-red-400 font-bold">✕ 이런 분과는 맞지 않습니다:</span>');
+    addSpacer('8px');
+
+    const negatives = [
+      '만들어진 기획서대로만 코딩하는 것에 익숙한 분',
+      'AI를 수동적인 도구로만 바라보는 분',
+    ];
+
+    for (const item of negatives) {
+      const div = document.createElement('div');
+      div.className = 'ml-4 flex items-start gap-x-2 mb-1.5 text-zinc-300';
+      div.innerHTML = '<span class="shrink-0 text-red-400 mt-0.5">✕</span><span class="flex-1">' + escapeHtml(item) + '</span>';
+      outputContainer.appendChild(div);
+      scrollToBottom();
+      await delay(150);
+    }
+
+    addSpacer();
+    addCommandHint('준비 되셨나요?', './apply.sh');
+    addSpacer('20px');
+    enableInput();
+  }
+
+  // --- ./apply.sh ---
+  async function cmdApply() {
+    disableInput();
+    addPromptLine('./apply.sh');
+    addSpacer();
+
+    await addTypedLine('[system] 스크립트 실행 중...', 'text-zinc-500', 30);
+    addSpacer('4px');
+
+    // Progress bar
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'ml-2 mb-2';
+    progressContainer.innerHTML =
+      '<div class="flex items-center gap-x-2">' +
+        '<span class="text-zinc-500 text-xs">[</span>' +
+        '<div class="w-48 h-2 bg-zinc-800 rounded-full overflow-hidden">' +
+          '<div id="progress-bar" class="h-full bg-green-400 rounded-full" style="width: 0%; transition: width 1.5s ease-in-out;"></div>' +
+        '</div>' +
+        '<span class="text-zinc-500 text-xs">]</span>' +
+        '<span id="progress-pct" class="text-green-400 text-xs">0%</span>' +
+      '</div>';
+    outputContainer.appendChild(progressContainer);
+    scrollToBottom();
+
+    // Animate progress
+    await delay(100);
+    const bar = document.getElementById('progress-bar');
+    const pct = document.getElementById('progress-pct');
+    bar.style.width = '100%';
+
+    // Simulate percentage updates
+    const steps = [10, 25, 50, 75, 90, 100];
+    for (const s of steps) {
+      await delay(250);
+      pct.textContent = s + '%';
+    }
+
+    await delay(500);
+
+    addSpacer();
+    addLine('<span class="text-green-500 font-bold">✓ [system] 권한이 승인되었습니다.</span>');
+    addSpacer();
+
+    await addTypedLine('이력서보다 당신이 지금까지 구축해온 아키텍처나,', 'text-zinc-300', 25);
+    await addTypedLine('가장 자랑스러운 기술적 문제 해결 경험을 들려주세요.', 'text-zinc-300', 25);
+    addSpacer();
+
+    addLine('<span class="text-zinc-500">메일 제목 양식:</span>');
+    addLine('<span class="text-cyan-400 font-bold">  [CTO 지원] sudo join mindfullabs - (이름)</span>');
+    addSpacer();
+
+    // Apply button
+    const btnDiv = document.createElement('div');
+    btnDiv.className = 'ml-2';
+    btnDiv.innerHTML = '<a href="mailto:honam.kang@mindfullabs.ai?subject=%5BCTO%20%EC%A7%80%EC%9B%90%5D%20sudo%20join%20mindfullabs%20-%20" class="apply-btn">$ sudo join mindfullabs →</a>';
+    outputContainer.appendChild(btnDiv);
+    scrollToBottom();
+
+    addSpacer();
+    addLine('<span class="text-zinc-600">[system] vibe-coded by honam.kang@mindfullabs.ai × Claude Opus 4.6</span>');
+
+    addSpacer('20px');
+    enableInput();
+  }
+
+  // --- stack (easter egg) ---
+  async function cmdStack() {
+    disableInput();
+    addPromptLine('stack');
+    addSpacer();
+
+    addLine('<span class="text-zinc-500">// 마음토스 기술 스택</span>');
+    addSpacer('4px');
+
+    const json = [
+      '{',
+      '  <span class="text-cyan-400">"product"</span>: <span class="text-amber-400">"마음토스 (Maumtoss)"</span>,',
+      '  <span class="text-cyan-400">"runtime"</span>: <span class="text-amber-400">"Node.js"</span>,',
+      '  <span class="text-cyan-400">"database"</span>: <span class="text-amber-400">"Supabase (PostgreSQL)"</span>,',
+      '  <span class="text-cyan-400">"frontend"</span>: <span class="text-amber-400">"React 19"</span>,',
+      '  <span class="text-cyan-400">"cloud"</span>: <span class="text-amber-400">"AWS"</span>,',
+      '  <span class="text-cyan-400">"ai"</span>: <span class="text-amber-400">"Multi-Agent LLM Pipeline"</span>,',
+      '  <span class="text-cyan-400">"auth"</span>: <span class="text-amber-400">"Supabase Auth"</span>,',
+      '  <span class="text-cyan-400">"status"</span>: <span class="text-red-400">"hiring_cto"</span>,',
+      '  <span class="text-cyan-400">"open_positions"</span>: <span class="text-green-400">1</span>',
+      '}',
+    ];
+
+    for (const line of json) {
+      addLine('<span class="text-zinc-300">' + line + '</span>', 'ml-2');
+      scrollToBottom();
+      await delay(80);
+    }
+
+    addSpacer('20px');
+    enableInput();
+  }
+
+  // --- Unknown command ---
+  async function cmdUnknown(cmd) {
+    addPromptLine(cmd);
+    addSpacer('4px');
+    addLine('<span class="text-red-400">bash: ' + escapeHtml(cmd) + ': command not found</span>');
+    addSpacer('4px');
+    addLine('<span class="text-zinc-600">사용 가능한 명령어를 보려면 </span><span class="cmd-clickable text-cyan-400" data-cmd="help">help</span><span class="text-zinc-600">를 입력하세요.</span>');
+    addSpacer('20px');
+    enableInput();
+  }
+
+  // === COMMAND ROUTER ===
+  async function executeCommand(cmd) {
+    disableInput();
+    cmdInput.value = '';
+    updateCursorPosition();
+
+    const trimmed = cmd.trim().toLowerCase();
+
+    switch (trimmed) {
+      case 'help':
+        await cmdHelp();
+        break;
+      case 'cat vision.md':
+        await cmdVision();
+        break;
+      case 'cat architecture.md':
+        await cmdArchitecture();
+        break;
+      case 'cat whoami.md':
+        await cmdWhoami();
+        break;
+      case './apply.sh':
+        await cmdApply();
+        break;
+      case 'stack':
+        await cmdStack();
+        break;
+      case 'ls':
+      case 'ls -la':
+      case 'ls -l':
+      case 'dir':
+        await cmdLs();
+        break;
+      case 'clear':
+      case 'cls':
+        cmdClear();
+        enableInput();
+        break;
+      default:
+        await cmdUnknown(cmd);
+        break;
+    }
+  }
+
+  // === BOOT ===
+  bootSequence();
+
+})();
+</script>
+</body>
+</html>
