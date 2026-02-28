@@ -18,74 +18,42 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            mono: ['JetBrains Mono', 'SF Mono', 'Consolas', 'monospace'],
-          }
-        }
-      }
-    }
+    tailwind.config = { theme: { extend: { fontFamily: {
+      mono: ['JetBrains Mono','Pretendard Variable','Pretendard','SF Mono','Consolas','monospace'],
+    }}}}
   </script>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    ::-webkit-scrollbar{background:#0c0a09;width:8px}
+    ::-webkit-scrollbar-thumb{background:#525252;border-radius:4px}
+    ::-webkit-scrollbar-thumb:hover{background:#737373}
+    ::selection{color:#f5f5f5;background:rgba(16,185,129,0.25)}
 
-    ::-webkit-scrollbar { background: #0c0a09; width: 8px; }
-    ::-webkit-scrollbar-thumb { background: #525252; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #737373; }
-    ::selection { color: #f5f5f5; background: rgba(16, 185, 129, 0.25); }
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    .cursor-blink{animation:blink 1s step-end infinite}
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-    .cursor-blink {
-      animation: blink 1s step-end infinite;
-    }
+    @keyframes hint-pulse{0%,100%{opacity:1}50%{opacity:0.2}}
+    .hint-blink{animation:hint-pulse 1.2s ease-in-out infinite}
 
-    @keyframes glow {
-      0%, 100% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.3); }
-      50% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.6); }
-    }
+    .cmd-clickable{cursor:pointer;transition:color .15s ease}
+    .cmd-clickable:hover{color:#67e8f9;text-decoration:underline}
 
-    .cmd-clickable {
-      cursor: pointer;
-      transition: color 0.15s ease;
-    }
-    .cmd-clickable:hover {
-      color: #67e8f9;
-      text-decoration: underline;
-    }
+    .apply-btn{display:inline-block;border:1px solid #4ade80;color:#4ade80;padding:8px 24px;margin-top:12px;cursor:pointer;transition:all .2s ease;text-decoration:none;font-family:'JetBrains Mono','Pretendard Variable',monospace;font-size:14px}
+    .apply-btn:hover{background:#4ade80;color:#0c0a09;box-shadow:0 0 20px rgba(74,222,128,0.4)}
+    .link-btn{display:inline-block;border:1px solid #06b6d4;color:#06b6d4;padding:6px 16px;cursor:pointer;transition:all .2s ease;text-decoration:none;font-family:'JetBrains Mono','Pretendard Variable',monospace;font-size:13px}
+    .link-btn:hover{background:#06b6d4;color:#0c0a09;box-shadow:0 0 15px rgba(59, 202, 227, 0.3)}
 
-    .apply-btn {
-      display: inline-block;
-      border: 1px solid #4ade80;
-      color: #4ade80;
-      padding: 8px 24px;
-      margin-top: 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-decoration: none;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 14px;
-    }
-    .apply-btn:hover {
-      background: #4ade80;
-      color: #0c0a09;
-      box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
-    }
+    #cmd-input{caret-color:transparent}
+    #cmd-input:focus{outline:none}
 
-    @keyframes progress {
-      0% { width: 0%; }
-      100% { width: 100%; }
-    }
-
-    /* Hide input caret and let custom cursor show */
-    #cmd-input { caret-color: transparent; }
-    #cmd-input:focus { outline: none; }
+    #nav-panel{transition:opacity .15s ease,transform .15s ease}
+    #nav-panel.hidden{opacity:0;pointer-events:none;transform:translateY(8px)}
+    .nav-item{transition:background .1s ease}
+    .nav-item:hover{background:rgba(74,222,128,0.08)}
+    .nav-item.selected{background:rgba(74,222,128,0.18)}
   </style>
 </head>
 <body class="text-neutral-100 min-h-screen bg-stone-950 font-mono overflow-x-hidden">
@@ -117,12 +85,20 @@
       <!-- Bottom status bar -->
       <div class="shrink-0 border-t border-zinc-800 bg-zinc-900">
         <div class="mx-auto flex w-full max-w-4xl items-center px-4 sm:px-6 py-1 text-xs text-neutral-600">
-          <div class="flex items-center gap-x-3">
-            <span>MEM: 48MB</span>
-            <span>CPU: 2%</span>
-          </div>
+          <span>MEM: 48MB</span><span class="ml-3">CPU: 2%</span>
           <div class="flex-1"></div>
           <span class="text-neutral-600">Mindful Labs V2</span>
+        </div>
+      </div>
+
+      <!-- Nav Panel (above input) -->
+      <div id="nav-panel" class="hidden shrink-0 border-t border-zinc-700 bg-zinc-900/95 backdrop-blur">
+        <div class="mx-auto w-full max-w-4xl px-4 sm:px-6">
+          <div class="flex items-center justify-between py-2 border-b border-zinc-800">
+            <span class="text-xs text-zinc-400 font-bold">섹션 선택</span>
+            <span class="text-xs text-zinc-600">↑↓ 이동 · ↵ 선택</span>
+          </div>
+          <div id="nav-list" class="py-1 max-h-56 overflow-y-auto"></div>
         </div>
       </div>
 
@@ -130,24 +106,15 @@
       <div class="relative shrink-0 rounded-b-lg bg-zinc-900 border-t border-zinc-800">
         <div class="mx-auto w-full max-w-4xl px-4 sm:px-6 py-2">
           <div class="flex items-center">
-            <span class="text-green-400 mr-1">cto@mindfullabs</span><span class="text-zinc-500 mr-1">:</span><span class="text-blue-400 mr-1">~</span><span class="text-zinc-500 mr-1">$</span>
+            <span id="cmd-status" class="mr-2 shrink-0 text-green-400">></span>
             <div class="flex-1 relative flex items-center">
-              <input
-                id="cmd-input"
-                type="text"
-                class="w-full bg-transparent text-zinc-300 font-mono text-sm border-none p-0"
-                autocomplete="off"
-                autocorrect="off"
-                autocapitalize="off"
-                spellcheck="false"
-                disabled
-              >
-              <span id="input-cursor" class="cursor-blink inline-block w-[7px] h-[18px] bg-green-400 ml-0 absolute" style="left: 0;"></span>
+              <input id="cmd-input" type="text" class="w-full bg-transparent text-zinc-300 font-mono text-sm border-none p-0"
+                placeholder="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" disabled>
+              <span id="input-cursor" class="cursor-blink inline-block w-[7px] h-[18px] bg-green-400 ml-0 absolute" style="left:0"></span>
             </div>
-            <button id="run-btn" class="ml-3 flex h-7 w-7 items-center justify-center rounded-lg bg-green-500 hover:bg-green-400 transition-colors" title="실행" disabled>
+            <button id="run-btn" class="ml-3 flex h-7 w-7 items-center justify-center rounded-lg bg-green-500 hover:bg-green-400 transition-colors shrink-0" title="실행" disabled>
               <svg width="14" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 fill-none stroke-white">
-                <path d="M9 10l-5 5 5 5"></path>
-                <path d="M4 15h11a4 4 0 0 0 4-4V5"></path>
+                <path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path>
               </svg>
             </button>
           </div>
@@ -158,627 +125,587 @@
   </div>
 
 <script>
-(function() {
-  // === DOM ===
-  const outputContainer = document.getElementById('output-container');
-  const terminalOutput = document.getElementById('terminal-output');
-  const cmdInput = document.getElementById('cmd-input');
-  const inputCursor = document.getElementById('input-cursor');
-  const runBtn = document.getElementById('run-btn');
+(function(){
+  const O = document.getElementById('output-container');
+  const T = document.getElementById('terminal-output');
+  const I = document.getElementById('cmd-input');
+  const IC = document.getElementById('input-cursor');
+  const RB = document.getElementById('run-btn');
+  const NP = document.getElementById('nav-panel');
+  const NL = document.getElementById('nav-list');
+  const CS = document.getElementById('cmd-status');
 
   let isTyping = false;
-  let commandQueue = [];
+  let currentSection = 0;
+  let navOpen = false;
+  let navIdx = 0;
 
-  // === Utility: scroll to bottom ===
-  function scrollToBottom() {
-    terminalOutput.scrollTop = terminalOutput.scrollHeight;
-  }
+  // === Sections ===
+  const sections = [
+    { idx:0, cmd:'cat the_irony.md',      short:'/irony',     name:'시대의 아이러니, 그리고 우리의 반격', loading:'아이러니를 해독하는 중...',  fn:cmdS1 },
+    { idx:1, cmd:'cat product.md',        short:'/product',   name:'마음토스: 라이브 프로덕트',  loading:'라이브 프로덕트 데이터 로딩 중...', fn:cmdS2 },
+    { idx:2, cmd:'cat the_masterplan.md', short:'/vision',    name:'비전과 마스터플랜',         loading:'마스터플랜 복호화 중...',          fn:cmdS3 },
+    { idx:3, cmd:'cat challenges.md',     short:'/challenge', name:'주요 업무와 기술적 도전',    loading:'기술적 도전 과제 분석 중...',      fn:cmdS4 },
+    { idx:4, cmd:'cat requirements.md',   short:'/recruit',   name:'자격 요건 및 보상',         loading:'자격 요건 및 보상 조회 중...',     fn:cmdS5 },
+    { idx:5, cmd:'./join_mindfullabs.sh', short:'/join',      name:'합류하기',                  loading:'합류 프로세스 초기화 중...',       fn:cmdS6 },
+  ];
 
-  // === Utility: delay ===
-  function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
+  // === ASCII ===
+  const asciiMindful=['███╗   ███╗██╗███╗   ██╗██████╗ ███████╗██╗   ██╗██╗     ','████╗ ████║██║████╗  ██║██╔══██╗██╔════╝██║   ██║██║     ','██╔████╔██║██║██╔██╗ ██║██║  ██║█████╗  ██║   ██║██║     ','██║╚██╔╝██║██║██║╚██╗██║██║  ██║██╔══╝  ██║   ██║██║     ','██║ ╚═╝ ██║██║██║ ╚████║██████╔╝██║     ╚██████╔╝███████╗','╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝ ╚═╝      ╚═════╝ ╚══════╝'];
+  const asciiLabs=['██╗      █████╗ ██████╗ ███████╗','██║     ██╔══██╗██╔══██╗██╔════╝','██║     ███████║██████╔╝███████╗','██║     ██╔══██║██╔══██╗╚════██║','███████╗██║  ██║██████╔╝███████║','╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝'];
+  const asciiIrony=['██╗██████╗  ██████╗ ███╗   ██╗██╗   ██╗','██║██╔══██╗██╔═══██╗████╗  ██║╚██╗ ██╔╝','██║██████╔╝██║   ██║██╔██╗ ██║ ╚████╔╝ ','██║██╔══██╗██║   ██║██║╚██╗██║  ╚██╔╝  ','██║██║  ██║╚██████╔╝██║ ╚████║   ██║   ','╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   '];
+  const asciiProduct=['██████╗ ██████╗  ██████╗ ██████╗ ██╗   ██╗ ██████╗████████╗','██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██║   ██║██╔════╝╚══██╔══╝','██████╔╝██████╔╝██║   ██║██║  ██║██║   ██║██║        ██║   ','██╔═══╝ ██╔══██╗██║   ██║██║  ██║██║   ██║██║        ██║   ','██║     ██║  ██║╚██████╔╝██████╔╝╚██████╔╝╚██████╗   ██║   ','╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═════╝  ╚═════╝  ╚═════╝   ╚═╝   '];
+  const asciiVision=['██╗   ██╗██╗███████╗██╗ ██████╗ ███╗   ██╗','██║   ██║██║██╔════╝██║██╔═══██╗████╗  ██║','██║   ██║██║███████╗██║██║   ██║██╔██╗ ██║','╚██╗ ██╔╝██║╚════██║██║██║   ██║██║╚██╗██║',' ╚████╔╝ ██║███████║██║╚██████╔╝██║ ╚████║','  ╚═══╝  ╚═╝╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝'];
+  const asciiChallenge=[' ██████╗██╗  ██╗ █████╗ ██╗     ██╗     ███████╗███╗   ██╗ ██████╗ ███████╗','██╔════╝██║  ██║██╔══██╗██║     ██║     ██╔════╝████╗  ██║██╔════╝ ██╔════╝','██║     ███████║███████║██║     ██║     █████╗  ██╔██╗ ██║██║  ███╗█████╗  ','██║     ██╔══██║██╔══██║██║     ██║     ██╔══╝  ██║╚██╗██║██║   ██║██╔══╝  ','╚██████╗██║  ██║██║  ██║███████╗███████╗███████╗██║ ╚████║╚██████╔╝███████╗',' ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═══╝ ╚═════╝ ╚══════╝'];
+  const asciiRecruit=['██████╗ ███████╗ ██████╗██████╗ ██╗   ██╗██╗████████╗','██╔══██╗██╔════╝██╔════╝██╔══██╗██║   ██║██║╚══██╔══╝','██████╔╝█████╗  ██║     ██████╔╝██║   ██║██║   ██║   ','██╔══██╗██╔══╝  ██║     ██╔══██╗██║   ██║██║   ██║   ','██║  ██║███████╗╚██████╗██║  ██║╚██████╔╝██║   ██║   ','╚═╝  ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝ ╚═════╝ ╚═╝   ╚═╝   '];
+  const asciiJoin=['     ██╗ ██████╗ ██╗███╗   ██╗','     ██║██╔═══██╗██║████╗  ██║','     ██║██║   ██║██║██╔██╗ ██║','██   ██║██║   ██║██║██║╚██╗██║','╚█████╔╝╚██████╔╝██║██║ ╚████║',' ╚════╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝'];
+  const sectionAscii=[asciiIrony,asciiProduct,asciiVision,asciiChallenge,asciiRecruit,asciiJoin];
 
-  // === Cursor position update ===
-  function updateCursorPosition() {
-    const text = cmdInput.value;
-    // Create a temporary span to measure text width
-    const span = document.createElement('span');
-    span.style.fontFamily = "'JetBrains Mono', monospace";
-    span.style.fontSize = '14px';
-    span.style.visibility = 'hidden';
-    span.style.position = 'absolute';
-    span.style.whiteSpace = 'pre';
-    span.textContent = text;
+  // === Utility ===
+  function scroll(){T.scrollTop=T.scrollHeight}
+  function delay(ms){return new Promise(r=>setTimeout(r,ms))}
+
+  function updateCursor(){
+    const span=document.createElement('span');
+    span.style.cssText="font-family:'JetBrains Mono',monospace;font-size:14px;visibility:hidden;position:absolute;white-space:pre";
+    span.textContent=I.value;
     document.body.appendChild(span);
-    const width = span.offsetWidth;
+    IC.style.left=span.offsetWidth+'px';
     document.body.removeChild(span);
-    inputCursor.style.left = width + 'px';
   }
 
-  // === Core: Type text character by character ===
-  async function typeText(element, text, speed = 30) {
-    for (let i = 0; i < text.length; i++) {
-      element.textContent += text[i];
-      scrollToBottom();
-      await delay(speed + Math.random() * 20);
+  async function typeText(el,text,speed=25){
+    for(let i=0;i<text.length;i++){el.textContent+=text[i];scroll();await delay(speed+Math.random()*10)}
+  }
+
+  function addLine(html,cls=''){
+    const d=document.createElement('div');
+    if(cls)d.className=cls;
+    d.innerHTML=html;O.appendChild(d);scroll();return d;
+  }
+
+  async function addTypedLine(text,cls='',speed=15){
+    const d=document.createElement('div');
+    if(cls)d.className=cls;
+    O.appendChild(d);await typeText(d,text,speed);scroll();return d;
+  }
+
+  function addSpacer(h='12px'){const d=document.createElement('div');d.style.height=h;O.appendChild(d)}
+
+  function addPromptLine(cmd){
+    addLine('<span class="text-green-400">cto@mindfullabs</span><span class="text-zinc-500">:</span><span class="text-blue-400">~</span><span class="text-zinc-500">$ </span><span class="text-zinc-300">'+esc(cmd)+'</span>');
+  }
+
+  function addHint(text,cmd){
+    const d=document.createElement('div');d.className='text-zinc-500 mt-2';
+    d.innerHTML='<span class="text-zinc-600">[hint]</span> '+text+' <span class="cmd-clickable text-cyan-400" data-cmd="'+esc(cmd)+'">'+esc(cmd)+'</span>';
+    O.appendChild(d);scroll();
+  }
+
+  function addEnterHint(){
+    const d=document.createElement('div');d.className='enter-hint';
+    d.innerHTML='<span class="hint-blink text-green-400 font-bold mt-2 inline-block">↵ Enter를 눌러 다음 섹션으로</span>';
+    O.appendChild(d);scroll();
+  }
+
+  function removeEnterHints(){
+    O.querySelectorAll('.enter-hint').forEach(el=>el.remove());
+  }
+
+  function esc(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
+
+  function renderAsciiInstant(lines,cls='text-green-400'){
+    const c=document.createElement('div');
+    c.className='overflow-x-hidden text-xs sm:text-sm '+cls+' font-mono leading-tight whitespace-pre';
+    lines.forEach(l=>{const d=document.createElement('div');d.className='overflow-x-hidden';d.textContent=l;c.appendChild(d)});
+    O.appendChild(c);scroll();
+  }
+
+  async function renderAscii(lines,cls='text-green-400'){
+    const c=document.createElement('div');
+    c.className='overflow-x-hidden text-xs sm:text-sm '+cls+' font-mono leading-tight whitespace-pre';
+    O.appendChild(c);
+    for(const l of lines){const d=document.createElement('div');d.className='overflow-x-hidden';d.textContent=l;c.appendChild(d);scroll();await delay(35)}
+  }
+
+  function addSectionMarker(idx,name){
+    addSpacer('16px');
+    addLine('<span class="text-green-400 font-bold">> ['+idx+'] '+esc(name)+'</span>');
+    addSpacer('8px');
+  }
+
+  // === Loading bar ===
+  async function showLoading(msg){
+    const wrap=document.createElement('div');wrap.className='ml-2 my-2';
+    const label=document.createElement('div');label.className='text-zinc-500 text-xs mb-1';label.textContent='[system] '+msg;
+    const barOuter=document.createElement('div');barOuter.className='flex items-center gap-x-2';
+    barOuter.innerHTML='<span class="text-zinc-600 text-xs">[</span><div class="w-48 h-1.5 bg-zinc-800 rounded-full overflow-hidden"><div class="h-full bg-green-400 rounded-full" style="width:0%;transition:width 0.25s ease-out"></div></div><span class="text-zinc-600 text-xs">]</span><span class="text-green-400 text-xs">0%</span>';
+    wrap.appendChild(label);wrap.appendChild(barOuter);O.appendChild(wrap);scroll();
+    await delay(80);
+    const bar=barOuter.querySelector('div > div');
+    const pct=barOuter.querySelector('span:last-child');
+    for(const s of [12,28,41,55,68,79,88,95,100]){bar.style.width=s+'%';pct.textContent=s+'%';await delay(80+Math.random()*120)}
+    await delay(120);
+    label.innerHTML='<span class="text-green-500">✓</span> <span class="text-zinc-500">'+esc(msg)+' 완료</span>';
+    scroll();
+    await delay(150);
+  }
+
+  // === Processing state ===
+  function setProcessing(on){
+    if(on){
+      CS.innerHTML='<span class="text-amber-400 text-xs">처리중...</span>';
+      IC.style.display='none';
+      I.style.display='none';
+    }else{
+      CS.innerHTML='<span class="text-green-400">></span>';
+      IC.style.display='';
+      I.style.display='';
     }
   }
 
-  // === Core: Add a line to terminal ===
-  function addLine(html, className = '') {
-    const div = document.createElement('div');
-    if (className) div.className = className;
-    div.innerHTML = html;
-    outputContainer.appendChild(div);
-    scrollToBottom();
-    return div;
-  }
-
-  // === Core: Add a line with typewriter effect ===
-  async function addTypedLine(text, className = '', speed = 30) {
-    const div = document.createElement('div');
-    if (className) div.className = className;
-    outputContainer.appendChild(div);
-    await typeText(div, text, speed);
-    scrollToBottom();
-    return div;
-  }
-
-  // === Core: Add spacer ===
-  function addSpacer(h = '12px') {
-    const div = document.createElement('div');
-    div.style.height = h;
-    outputContainer.appendChild(div);
-  }
-
-  // === Core: Add prompt line (shows what user typed) ===
-  function addPromptLine(cmd) {
-    addLine(
-      '<span class="text-green-400">cto@mindfullabs</span>' +
-      '<span class="text-zinc-500">:</span>' +
-      '<span class="text-blue-400">~</span>' +
-      '<span class="text-zinc-500">$ </span>' +
-      '<span class="text-zinc-300">' + escapeHtml(cmd) + '</span>'
-    );
-  }
-
-  // === Core: Add clickable command hint ===
-  function addCommandHint(text, cmd) {
-    const div = document.createElement('div');
-    div.className = 'text-zinc-500 mt-2';
-    div.innerHTML = '<span class="text-zinc-600">[hint]</span> ' + text + ' <span class="cmd-clickable text-cyan-400" data-cmd="' + escapeHtml(cmd) + '">' + escapeHtml(cmd) + '</span>';
-    outputContainer.appendChild(div);
-    scrollToBottom();
-  }
-
-  // === Escape HTML ===
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  // === Type into input field (visual effect) ===
-  async function typeIntoInput(text) {
-    cmdInput.value = '';
-    updateCursorPosition();
-    for (let i = 0; i < text.length; i++) {
-      cmdInput.value += text[i];
-      updateCursorPosition();
-      await delay(50 + Math.random() * 30);
+  // === Placeholder ===
+  function updatePlaceholder(){
+    if(currentSection<sections.length){
+      const s=sections[currentSection];
+      I.placeholder='명령어를 입력하세요... 다음 콘텐츠는 ['+s.idx+'] '+s.short+' '+s.name;
+    }else{
+      I.placeholder='명령어를 입력하세요...';
     }
-    await delay(300);
   }
 
-  // === Command click handler (event delegation) ===
-  outputContainer.addEventListener('click', async function(e) {
-    const clickable = e.target.closest('.cmd-clickable');
-    if (clickable && !isTyping) {
-      const cmd = clickable.dataset.cmd;
-      if (cmd) {
-        await typeIntoInput(cmd);
-        executeCommand(cmd);
+  // === Nav Panel ===
+  function buildNav(){
+    NL.innerHTML='';
+    sections.forEach((s,i)=>{
+      const item=document.createElement('div');
+      item.className='nav-item flex items-center gap-x-2 px-4 py-2 cursor-pointer text-xs sm:text-sm';
+      if(i===navIdx)item.classList.add('selected');
+      if(i<currentSection){
+        item.innerHTML='<span class="text-zinc-600 w-6 text-center shrink-0">['+s.idx+']</span><span class="text-green-400 w-20 shrink-0">'+esc(s.short)+'</span><span class="text-zinc-500 flex-1">'+esc(s.name)+'</span><span class="text-green-500 text-xs">✓</span>';
+      }else if(i===currentSection){
+        item.innerHTML='<span class="text-green-400 w-6 text-center shrink-0 font-bold">['+s.idx+']</span><span class="text-green-400 w-20 shrink-0 font-bold">'+esc(s.short)+'</span><span class="text-zinc-300 flex-1 font-bold">'+esc(s.name)+'</span>';
+      }else{
+        item.innerHTML='<span class="text-zinc-600 w-6 text-center shrink-0">['+s.idx+']</span><span class="text-zinc-500 w-20 shrink-0">'+esc(s.short)+'</span><span class="text-zinc-600 flex-1">'+esc(s.name)+'</span>';
       }
-    }
-  });
+      item.addEventListener('click',()=>{navIdx=i;selectNavItem()});
+      NL.appendChild(item);
+    });
+  }
+
+  function openNav(){
+    if(navOpen)return;
+    removeEnterHints();
+    navOpen=true;
+    navIdx=Math.min(currentSection,sections.length-1);
+    buildNav();
+    NP.classList.remove('hidden');
+  }
+
+  function closeNav(){navOpen=false;NP.classList.add('hidden')}
+
+  function selectNavItem(){
+    closeNav();
+    const s=sections[navIdx];
+    addPromptLine(s.cmd);
+    currentSection=Math.max(currentSection,navIdx+1);
+    runSection(navIdx);
+  }
+
+  async function runSection(idx){
+    setProcessing(true);
+    await showLoading(sections[idx].loading);
+    await sections[idx].fn();
+    setProcessing(false);
+    if(idx+1>currentSection)currentSection=idx+1;
+    updatePlaceholder();
+    buildNav();
+  }
 
   // === Input handling ===
-  cmdInput.addEventListener('input', updateCursorPosition);
-  cmdInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !isTyping) {
-      const cmd = cmdInput.value.trim();
-      if (cmd) {
-        executeCommand(cmd);
-      }
+  O.addEventListener('click',async function(e){
+    const c=e.target.closest('.cmd-clickable');
+    if(c&&!isTyping){const cmd=c.dataset.cmd;if(cmd){closeNav();await typeIntoInput(cmd);executeCommand(cmd)}}
+  });
+
+  async function typeIntoInput(text){
+    I.value='';updateCursor();
+    for(let i=0;i<text.length;i++){I.value+=text[i];updateCursor();await delay(40+Math.random()*20)}
+    await delay(200);
+  }
+
+  I.addEventListener('input',updateCursor);
+  I.addEventListener('keydown',function(e){
+    if(isTyping)return;
+    if(navOpen){
+      if(e.key==='ArrowDown'){e.preventDefault();navIdx=Math.min(navIdx+1,sections.length-1);buildNav();return}
+      if(e.key==='ArrowUp'){e.preventDefault();navIdx=Math.max(navIdx-1,0);buildNav();return}
+      if(e.key==='Enter'){e.preventDefault();selectNavItem();return}
+      if(e.key==='Escape'){e.preventDefault();closeNav();return}
+      // Any other key: close nav and let input handle it
+      closeNav();return;
+    }
+    if(e.key==='Enter'){
+      const cmd=I.value.trim();
+      if(cmd){executeCommand(cmd)}
+      else{e.preventDefault();openNav()}
     }
   });
 
-  runBtn.addEventListener('click', function() {
-    if (!isTyping) {
-      const cmd = cmdInput.value.trim();
-      if (cmd) {
-        executeCommand(cmd);
-      }
-    }
+  RB.addEventListener('click',function(){
+    if(isTyping)return;
+    if(navOpen){selectNavItem();return}
+    const cmd=I.value.trim();
+    if(cmd){executeCommand(cmd)}
+    else{openNav()}
   });
 
-  // === Enable input ===
-  function enableInput() {
-    cmdInput.disabled = false;
-    runBtn.disabled = false;
-    cmdInput.focus();
-    isTyping = false;
-  }
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&navOpen)closeNav()});
 
-  // === Disable input ===
-  function disableInput() {
-    cmdInput.disabled = true;
-    runBtn.disabled = true;
-    isTyping = true;
-  }
+  function enableInput(){I.disabled=false;RB.disabled=false;I.focus();isTyping=false;updatePlaceholder()}
+  function disableInput(){I.disabled=true;RB.disabled=true;isTyping=true}
 
-  // === COMMAND DEFINITIONS ===
-
-  // --- Boot Sequence ---
-  async function bootSequence() {
+  // ==========================================
+  // BOOT
+  // ==========================================
+  async function bootSequence(){
     disableInput();
+    setProcessing(true);
 
-    await addTypedLine('[system] 접속 대기 중...', 'text-zinc-500', 40);
-    await delay(600);
+    addLine('<span class="text-zinc-500">[system] 접속 대기 중...</span>');
+    await delay(200);
+    addLine('<span class="text-green-400">$ ssh cto@mindfullabs.ai</span>');
+    await delay(300);
+    addLine('<span class="text-zinc-500">[system] 연결 중...</span>');
+    await delay(300);
+    addLine('<span class="text-green-500">✓</span> <span class="text-zinc-500">연결 완료</span>');
+
+    // Boot loading bar
+    await showLoading('시스템 초기화 중...');
+
+    setProcessing(false);
+
+    addSpacer('12px');
+    renderAsciiInstant(asciiMindful,'text-green-400');
+    addSpacer('4px');
+    renderAsciiInstant(asciiLabs,'text-green-400');
+    addSpacer();
+
+    const tagBox=document.createElement('div');
+    tagBox.className='self-start border-2 border-green-400 px-4 py-3';
+    tagBox.innerHTML='<div class="text-green-400 font-bold">✱ 상담사는 오직 상담에만.</div>';
+    O.appendChild(tagBox);scroll();
+    await delay(200);
+    addSpacer();
+
+    addLine('<span class="text-zinc-300">심리 상담 산업의 운영체제(OS)를 함께 만들 </span><span class="text-green-400 font-bold">CTO</span><span class="text-zinc-300">를 찾습니다.</span>');
+    addSpacer('8px');
+    addLine('<span class="text-cyan-400">✦</span> <span class="text-zinc-300">확실한 지분(Equity) 보장</span> <span class="text-zinc-600">|</span> <span class="text-zinc-300">AI Native 팀</span> <span class="text-zinc-600">|</span> <span class="text-zinc-300">고속 성장 중인 라이브 프로덕트</span>');
+    addLine('<span class="text-cyan-400">✦</span> <span class="text-zinc-300">이미 현장에서 열광하는 프로덕트에 글로벌 엔진을 달아줄 마에스트로</span>');
+    addSpacer('4px');
+
+    const rl=document.createElement('div');rl.className='text-green-400 font-bold text-base sm:text-lg my-2';
+    O.appendChild(rl);await typeText(rl,'지금, 이 로켓에 탑승하세요.',40);scroll();
 
     addSpacer();
-    await addTypedLine('$ ssh cto@mindfullabs.ai', 'text-green-400', 45);
-    await delay(1000);
+    addLine('<span class="text-zinc-600">Enter를 눌러 순서대로 탐색하거나, </span><span class="cmd-clickable text-cyan-400" data-cmd="help">help</span><span class="text-zinc-600">를 입력하세요.</span>');
+    addSpacer('20px');
+    updatePlaceholder();
+    buildNav();
+    enableInput();
+  }
 
+  // ==========================================
+  // HELP / LS / CLEAR / STACK / UNKNOWN
+  // ==========================================
+  async function cmdHelp(){
+    disableInput();addPromptLine('help');addSpacer();
+    addLine('<span class="text-zinc-400">사용 가능한 명령어:</span>');addSpacer('8px');
+    const cmds=[...sections.map(s=>({cmd:s.cmd,desc:s.name})),{cmd:'ls',desc:'파일 목록 보기'},{cmd:'clear',desc:'터미널 초기화'}];
+    for(const c of cmds){
+      addLine('<span class="flex items-start ml-2 mb-1"><span class="cmd-clickable text-cyan-400 w-56 shrink-0" data-cmd="'+esc(c.cmd)+'">'+esc(c.cmd)+'</span><span class="text-zinc-500">'+esc(c.desc)+'</span></span>');
+      await delay(40);
+    }
     addSpacer();
-    await addTypedLine('[system] 연결 중... mindfullabs.ai...', 'text-zinc-500', 35);
-    await delay(800);
+    addLine('<span class="text-zinc-600">Enter만 누르면 섹션 선택 메뉴가 열립니다.</span>');
+    addLine('<span class="text-zinc-600">hint: try typing </span><span class="cmd-clickable text-amber-400" data-cmd="stack">\'stack\'</span>');
+    addSpacer('20px');enableInput();
+  }
 
-    const connLine = addLine('<span class="text-green-500">✓</span> <span class="text-zinc-500">연결 완료</span> <span class="text-stone-500">(지연시간: 1ms)</span>');
-    await delay(400);
+  async function cmdLs(){
+    disableInput();addPromptLine('ls');addSpacer();
+    const files=[{n:'the_irony.md',c:'text-green-400'},{n:'product.md',c:'text-green-400'},{n:'the_masterplan.md',c:'text-green-400'},{n:'challenges.md',c:'text-green-400'},{n:'requirements.md',c:'text-green-400'},{n:'join_mindfullabs.sh',c:'text-red-400'}];
+    addLine('<span class="text-zinc-500">total '+files.length+'</span>');addSpacer('4px');
+    for(const f of files){const p=f.n.endsWith('.sh')?'-rwxr-xr-x':'-rw-r--r--';addLine('<span class="text-zinc-600 ml-2">'+p+'  cto  </span><span class="'+f.c+'">'+f.n+'</span>');await delay(50)}
+    addSpacer('20px');enableInput();
+  }
 
+  function cmdClear(){O.innerHTML='';enableInput()}
+
+  async function cmdStack(){
+    disableInput();addPromptLine('stack');addSpacer();
+    addLine('<span class="text-zinc-500">// 마음토스 기술 스택</span>');addSpacer('4px');
+    const j=['{','  <span class="text-cyan-400">"product"</span>: <span class="text-amber-400">"마음토스 (Maumtoss)"</span>,','  <span class="text-cyan-400">"runtime"</span>: <span class="text-amber-400">"Node.js"</span>,','  <span class="text-cyan-400">"database"</span>: <span class="text-amber-400">"Supabase (PostgreSQL)"</span>,','  <span class="text-cyan-400">"frontend"</span>: <span class="text-amber-400">"React 19"</span>,','  <span class="text-cyan-400">"cloud"</span>: <span class="text-amber-400">"AWS"</span>,','  <span class="text-cyan-400">"ai"</span>: <span class="text-amber-400">"Multi-Agent LLM Pipeline"</span>,','  <span class="text-cyan-400">"status"</span>: <span class="text-red-400">"hiring_cto"</span>,','  <span class="text-cyan-400">"open_positions"</span>: <span class="text-green-400">1</span>','}'];
+    for(const l of j){addLine('<span class="text-zinc-300">'+l+'</span>','ml-2');await delay(40)}
+    addSpacer('20px');enableInput();
+  }
+
+  function cmdUnknown(cmd){
+    addPromptLine(cmd);addSpacer('4px');
+    addLine('<span class="text-red-400">bash: '+esc(cmd)+': command not found</span>');
+    addSpacer('4px');
+    addLine('<span class="text-zinc-600">사용 가능한 명령어를 보려면 </span><span class="cmd-clickable text-cyan-400" data-cmd="help">help</span><span class="text-zinc-600">를 입력하세요.</span>');
+    addSpacer('20px');enableInput();
+  }
+
+  // ==========================================
+  // SECTIONS
+  // ==========================================
+  async function cmdS1(){
+    disableInput();
+    addSectionMarker(0,'시대의 아이러니, 그리고 우리의 반격');
+    await renderAscii(asciiIrony);addSpacer();
+
+    await addTypedLine('세상은 AI가 코드를 짜고 예술을 창작하는 시대로 진입했습니다.','text-zinc-300');
+    await addTypedLine('하지만 인간의 마음을 치유하는 최전선, 심리 상담 현장의 시계는','text-zinc-300');
+    const ir=document.createElement('div');ir.className='text-amber-400 font-bold my-1';O.appendChild(ir);
+    await typeText(ir,'아직도 10년 전에 멈춰 있습니다.',20);scroll();
     addSpacer();
-    await addTypedLine('[system] Mindful Labs V2 Terminal에 오신 것을 환영합니다.', 'text-zinc-500', 30);
+    await addTypedLine('60분의 치열한 상담이 끝나면, 상담사는 120분 동안 녹음본을 다시 들으며','text-zinc-300');
+    await addTypedLine('일지를 쓰고, 결제를 처리하고, 다음 일정을 조율하는 행정 업무에 시달립니다.','text-zinc-300');
+    await addTypedLine('마음을 치유하는 전문가가 정작 내담자에게 온전히 집중하지 못하는 이 거대한 아이러니.','text-zinc-300');
+    addSpacer();
+    const q1=document.createElement('div');q1.className='text-green-400 font-bold text-base sm:text-lg my-1';O.appendChild(q1);await typeText(q1,'AI가 가장 먼저 인간을 도와야 할 곳이 있다면,',25);
+    const q2=document.createElement('div');q2.className='text-green-400 font-bold text-base sm:text-lg mb-2';O.appendChild(q2);await typeText(q2,'바로 인간의 마음을 치유하는 현장이어야 하지 않을까요?',25);scroll();
+    addSpacer();
+    await addTypedLine('우리는 단순한 자동 녹음기를 만들려는 것이 아닙니다.','text-zinc-300');
+    await addTypedLine('상담소의 모든 운영을 스스로 판단하고 처리하는 도메인 특화 AI Agent OS를 만들어,','text-zinc-300');
+    const pr=document.createElement('div');pr.className='text-cyan-400 font-bold my-1';O.appendChild(pr);
+    await typeText(pr,'이 산업의 패러다임 자체를 바꾸려 합니다.',20);scroll();
+
+    addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
+
+    await addTypedLine('이 거대한 문제를 가장 빠르고 확실하게 풀기 위해, 성공 공식을 아는 팀이 뭉쳤습니다.','text-zinc-300');
+    addSpacer();
+    await addTypedLine('강호남 대표는 대원외국어고등학교와 연세대학교 경영학과를 졸업하고,','text-zinc-300');
+    await addTypedLine('글로벌 컨설팅 펌과 투자은행(IB)에서 자본 시장과 비즈니스의 뼈대를 익혔습니다.','text-zinc-300');
+    addSpacer('4px');
+    await addTypedLine('이후 AI 스타트업 튜링(Turing)에 부대표로 합류하여 김성곤님과 처음 팀을 이뤘고,','text-zinc-300');
+    const st=document.createElement('div');st.className='text-green-400 font-bold my-1';O.appendChild(st);
+    await typeText(st,'누적 120억 원 규모의 투자를 직접 리드 | MAU 20배 이상 폭발적 성장',20);scroll();
+    await addTypedLine('하는 궤적을 함께 그려냈습니다.','text-zinc-300');
+    addSpacer();
+    await addTypedLine('여기에 더해, 강호남 대표는 현재','text-zinc-300');
+    const ul=document.createElement('div');ul.className='text-cyan-400 font-bold my-1';O.appendChild(ul);
+    await typeText(ul,'고려대학교 심리융합과학대학원에서 심리과학을 직접 연구하며',20);scroll();
+    await addTypedLine('도메인의 가장 깊숙한 문제들을 발굴해 내고 있습니다.','text-zinc-300');
+    addSpacer();
+    await addTypedLine('압도적인 실행력, 자본을 움직이는 비즈니스 감각,','text-zinc-300');
+    await addTypedLine('그리고 누구도 쉽게 따라올 수 없는 도메인 전문성.','text-zinc-300');
+    const rd=document.createElement('div');rd.className='text-amber-400 font-bold my-1';O.appendChild(rd);
+    await typeText(rd,'성공을 위한 모든 조건은 완벽하게 세팅되었습니다.',20);scroll();
+
+    addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
+
+    const f1=document.createElement('div');f1.className='text-zinc-300 my-1';O.appendChild(f1);await typeText(f1,'우리가 비즈니스를 장악하겠습니다.',20);scroll();
+    const f2=document.createElement('div');f2.className='text-green-400 font-bold text-base sm:text-lg my-2';O.appendChild(f2);
+    await typeText(f2,'당신은 이 로켓에 글로벌 스케일의 AI 아키텍처를 설계해 주십시오.',25);scroll();
+
+    addSpacer();addEnterHint();addSpacer('20px');enableInput();
+  }
+
+  async function cmdS2(){
+    disableInput();
+    addSectionMarker(1,'마음토스: 라이브 프로덕트');
+    await renderAscii(asciiProduct);addSpacer();
+    const tb=document.createElement('div');tb.className='self-start border-2 border-green-400 px-4 py-3 mb-4';tb.innerHTML='<div class="text-green-400 font-bold">이미 현장이 열광하는 라이브 프로덕트, 마음토스(Mindthos)</div>';O.appendChild(tb);scroll();await delay(200);addSpacer();
+
+    await addTypedLine('마음토스(Mindthos)는 책상 위에서 기획만 하고 있는 아이디어가 아닙니다.','text-zinc-300');
+    const ll=document.createElement('div');ll.className='text-green-400 font-bold my-2';O.appendChild(ll);
+    await typeText(ll,'이미 현장의 심리 상담사들이 매일 실무에 적용하며 열광하고 있는 라이브 프로덕트입니다.',15);scroll();
+    addSpacer();
+    await addTypedLine('최근 기능 업데이트 이후 사용자들의 만족도는 수직 상승했으며,','text-zinc-300');
+    await addTypedLine('한 번 사용해 본 상담사들이 이탈 없이 매일 접속하는','text-zinc-300');
+    addLine('<span class="text-amber-400 font-bold">압도적인 리텐션(Retention) 수치를 기록하고 있습니다.</span>');
+    addSpacer('4px');
+    await addTypedLine('특별한 마케팅 없이도 오직 입소문만으로 트래픽과 가입자가 매주 폭발적으로 성장하고 있습니다.','text-zinc-300');
+    addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
+
+    await addTypedLine('CTO님께서 오셔서 맨땅에 헤딩하는 것이 아닙니다.','text-zinc-300');addSpacer('4px');
+    const rm=document.createElement('div');rm.className='text-green-400 font-bold text-base sm:text-lg my-2';O.appendChild(rm);
+    await typeText(rm,'이미 고속 성장 중인 로켓에 글로벌 스케일의 엔진을 직접 달아주는',18);scroll();
+    const rm2=document.createElement('div');rm2.className='text-green-400 font-bold text-base sm:text-lg mb-2';O.appendChild(rm2);
+    await typeText(rm2,'가슴 뛰는 경험을 하시게 될 것입니다.',18);scroll();
+    addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
+
+    addLine('<span class="text-zinc-400">우리의 압도적인 개발 속도와 실제 구동되는 결과물을 지금 바로 확인해 보세요.</span>');addSpacer('8px');
+    const yt=document.createElement('div');yt.className='ml-2 mb-3 rounded-lg overflow-hidden border border-zinc-700 cursor-pointer group relative';yt.style.maxWidth='560px';
+    yt.innerHTML='<a href="https://www.youtube.com/watch?v=xAOSEFBhxYk" target="_blank" rel="noopener"><div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:#000"><img src="https://img.youtube.com/vi/xAOSEFBhxYk/hqdefault.jpg" alt="마음토스 데모 영상" style="position:absolute;top:50%;left:0;width:100%;transform:translateY(-50%);object-fit:cover"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3)"><svg width="68" height="48" viewBox="0 0 68 48"><path d="M66.5 7.7s-.7-4.7-2.8-6.8C60.7-2 57.2-2 55.6-1.8 46.4-1.1 34 -1.1 34-1.1h0s-12.4 0-21.6-.7C10.8-2 7.3-2 4.3.9 2.2 3 1.5 7.7 1.5 7.7S.8 13.2.8 18.7v5.1c0 5.5.7 11 .7 11s.7 4.7 2.8 6.8c3 2.9 6.9 2.8 8.6 3.1C19.1 45.1 34 45.3 34 45.3s12.4 0 21.6-.7c1.6-.2 5.1-.2 8.1-3.1 2.1-2.1 2.8-6.8 2.8-6.8s.7-5.5.7-11v-5.1c0-5.5-.7-11-.7-11z" fill="red"/><path d="M27 33V13l18 10z" fill="#fff"/></svg></div></div></a>';
+    O.appendChild(yt);scroll();addSpacer('4px');
+    addLine('<span class="text-zinc-600 ml-2 text-xs">▲ 클릭하면 YouTube에서 데모 영상을 시청합니다</span>');addSpacer('4px');
+    const ld=document.createElement('div');ld.className='flex flex-wrap gap-3 ml-2';
+    ld.innerHTML='<a href="https://mindthos.com/" target="_blank" rel="noopener" class="link-btn">→ mindthos.com 바로가기</a>';
+    O.appendChild(ld);scroll();
+
+    addSpacer();addEnterHint();addSpacer('20px');enableInput();
+  }
+
+  async function cmdS3(){
+    disableInput();
+    addSectionMarker(2,'비전과 마스터플랜');
+    await renderAscii(asciiVision);addSpacer();
+    const tb=document.createElement('div');tb.className='self-start border-2 border-green-400 px-4 py-3 mb-4';tb.innerHTML='<div class="text-green-400 font-bold">우리의 마스터플랜: 상담 보조를 넘어선 Full AI Agent OS</div>';O.appendChild(tb);scroll();await delay(200);addSpacer();
+
+    await addTypedLine('마음토스(Mindthos)는 단순한 STT 기반의 기록 보조 툴이 아닙니다.','text-zinc-300');
+    await addTypedLine('일정 관리, 결제, 심리검사 분석, 그리고 CRM까지.','text-zinc-300');
+    const m1=document.createElement('div');m1.className='text-green-400 font-bold text-base sm:text-lg my-2';O.appendChild(m1);
+    await typeText(m1,'상담소 운영의 A to Z를 완전히 자동화하는',20);
+    const m2=document.createElement('div');m2.className='text-green-400 font-bold text-base sm:text-lg mb-2';O.appendChild(m2);
+    await typeText(m2,'도메인 특화 AI Agent 워크플로우를 구축하는 것이 우리의 진짜 목표입니다.',20);scroll();
+    addSpacer();
+    await addTypedLine('비즈니스 전략과 도메인 전문성은 이미 완벽하게 준비되어 있습니다.','text-zinc-300');addSpacer('4px');
+    const c1=document.createElement('div');c1.className='text-cyan-400 font-bold my-1';O.appendChild(c1);await typeText(c1,'이제 이 거대한 시스템을 글로벌 스케일로 설계하고 확장할',20);
+    const c2=document.createElement('div');c2.className='text-cyan-400 font-bold mb-2';O.appendChild(c2);await typeText(c2,'마에스트로(CTO)가 바로 지금 우리에게 필요합니다.',20);scroll();
+
+    addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
+    addLine('<span class="text-green-400 font-bold">═══ 당신이 맡게 될 포지션의 역할 ═══</span>');addSpacer();
+    await addTypedLine('단순한 백엔드 개발이 아닌, 다중 AI Agent가 유기적으로 상호작용하는','text-zinc-300');
+    await addTypedLine('복잡한 워크플로우를 설계하고 구현하는 핵심 리더 역할을 수행합니다.','text-zinc-300');addSpacer('4px');
+    await addTypedLine('주니어 프론트엔드 개발자와 협업하여 현재의 아키텍처를 글로벌 스케일로 확장하고,','text-zinc-300');
+    await addTypedLine('도메인 특화 자동화 인프라의 기준(Harness)을 주도적으로 세우게 됩니다.','text-zinc-300');
+
+    addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
+    addLine('<span class="text-green-400 font-bold">═══ 우리의 진짜 무기: 완전한 AI Native 팀 ═══</span>');addSpacer();
+    await addTypedLine('레거시를 가진 기존 조직은 결코 하루아침에 AI Native가 될 수 없습니다.','text-zinc-300');
+    const nl=document.createElement('div');nl.className='text-amber-400 font-bold my-1';O.appendChild(nl);await typeText(nl,'마인드풀랩스는 태생부터 다릅니다.',20);scroll();
+    addSpacer('4px');
+    await addTypedLine('모든 팀원이 AI를 숨 쉬듯 활용하며 업무의 대부분을 자동화했습니다.','text-zinc-300');
+    await addTypedLine('SEO 최적화부터 마케팅 영상 제작까지 모두 AI로 직접 해결하며,','text-zinc-300');
+    await addTypedLine('매주 새로운 기능과 서비스를 배포하는 압도적인 개발 속도를 자랑합니다.','text-zinc-300');
+
+    addSpacer();addEnterHint();addSpacer('20px');enableInput();
+  }
+
+  async function cmdS4(){
+    disableInput();
+    addSectionMarker(3,'주요 업무와 기술적 도전');
+    await renderAscii(asciiChallenge);addSpacer();
+
+    addLine('<span class="text-green-400 font-bold text-base">═══ 주요 업무 ═══</span>');addSpacer();
+    const tasks=[
+      {t:'Full AI Agent 워크플로우 설계 및 구현',l:['일정 관리, 빌링, 심리검사 분석, CRM 등 상담소 운영 전반을 자동화하는','도메인 맞춤형 AI Agent 인프라 구축']},
+      {t:'글로벌 확장 아키텍처 설계',l:['다국어 지원 및 해외 트래픽에 대응할 수 있는 확장 가능하고 안정적인','글로벌 클라우드/데이터베이스 아키텍처(AWS, Supabase) 설계']},
+      {t:'AI 백엔드 파이프라인 고도화',l:['대용량 오디오 청킹 및 다중 LLM(Whisper, Gemini 등)을 활용한 병렬 처리 파이프라인 최적화']},
+      {t:'기술 리더십 및 인프라 표준화',l:['마인드풀랩스만의 개발 표준 수립, 프론트엔드 개발자와의 긴밀한 협업,','프로덕트 오너와 함께 글로벌 진출을 위한 기술 로드맵 수립']},
+    ];
+    for(let i=0;i<tasks.length;i++){
+      addLine('<span class="text-red-400 font-bold">  [0'+(i+1)+'] '+esc(tasks[i].t)+'</span>');addSpacer('4px');
+      for(const l of tasks[i].l)await addTypedLine('       '+l,'text-zinc-300');
+      addSpacer();
+    }
+    addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
+    addLine('<span class="text-green-400 font-bold text-base">═══ 기술적 도전 과제 ═══</span>');addSpacer();
+    const ch=[{t:'도메인 특화 AI Agent OS 구축',d:'다양한 단위 업무를 AI가 스스로 판단하고 처리하는 에이전트 연동 환경 세팅'},{t:'글로벌 시스템 확장성 확보',d:'향후 트래픽 증가와 국가별 데이터 규제를 고려한 인프라 분산 및 확장 전략 수립'},{t:'무결점 보안 아키텍처',d:'내담자의 민감한 심리 상담 내용을 완벽하게 보호하기 위한 최고 수준의 클라우드 보안망 구축'}];
+    for(const c of ch){addLine('<span class="text-amber-400 font-bold">  ▶ '+esc(c.t)+'</span>');addSpacer('4px');await addTypedLine('    '+c.d,'text-zinc-300');addSpacer()}
+
+    addSpacer();addEnterHint();addSpacer('20px');enableInput();
+  }
+
+  async function cmdS5(){
+    disableInput();
+    addSectionMarker(4,'자격 요건 및 보상');
+    await renderAscii(asciiRecruit);addSpacer();
+
+    addLine('<span class="text-green-400 font-bold text-base">═══ 자격 요건 ═══</span>');addSpacer();
+    const qs=['백엔드 개발 실무 경력 5년 이상 또는 그에 준하는 아키텍처 설계 역량을 갖추신 분','Node.js 및 TypeScript 기반의 백엔드 생태계에 대한 깊은 전문성을 보유하신 분','복잡한 비즈니스 로직을 API 및 시스템으로 설계하고 구현해 본 경험이 있으신 분','단순한 LLM API 호출을 넘어, AI Agent 기반의 자동화 워크플로우를 고민하고 설계해 본 분','비즈니스 문제 해결을 최우선으로 두고, 주도적으로 글로벌 스케일의 시스템을 구축하고자 하는 열정이 있는 분'];
+    for(const q of qs){addLine('<div class="ml-4 flex items-start gap-x-2 mb-1.5 text-zinc-300"><span class="shrink-0 text-emerald-400 mt-0.5">✓</span><span class="flex-1">'+esc(q)+'</span></div>');await delay(60)}
+
+    addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
+    addLine('<span class="text-green-400 font-bold text-base">═══ 우대 사항 ═══</span>');addSpacer();
+    const ps=['글로벌 서비스 런칭 경험 또는 다국어/멀티 리전 인프라 설계 경험이 있으신 분','복잡한 결제 연동, 캘린더 동기화 등 외부 API 통합 경험이 풍부하신 분','B2B SaaS 프로덕트 또는 업무 자동화 관련 서비스를 처음부터 구축해 본 경험이 있으신 분','민감한 의료/심리 데이터를 위한 글로벌 수준의 데이터 보안 및 컴플라이언스 대응에 관심이 있으신 분'];
+    for(const p of ps){addLine('<div class="ml-4 flex items-start gap-x-2 mb-1.5 text-zinc-300"><span class="shrink-0 text-cyan-400 mt-0.5">+</span><span class="flex-1">'+esc(p)+'</span></div>');await delay(60)}
+
+    addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
+    addLine('<span class="text-green-400 font-bold text-base">═══ 현재 기술 스택 ═══</span>');addSpacer();
+    [{l:'Backend',v:'Node.js, TypeScript, Supabase, PostgreSQL'},{l:'Frontend',v:'React 19, Vite, Tailwind CSS (주니어 FE 담당)'},{l:'Cloud & DevOps',v:'AWS, Docker, GitHub Actions'},{l:'AI & Media',v:'FFmpeg, OpenAI API, Google Gemini API'}].forEach(s=>{
+      addLine('<span class="ml-4"><span class="text-cyan-400">'+esc(s.l)+':</span> <span class="text-amber-400">'+esc(s.v)+'</span></span>');
+    });
+
+    addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
+    addLine('<span class="text-green-400 font-bold text-base">═══ 파격적인 보상: 확실한 지분 ═══</span>');addSpacer();
+    await addTypedLine('AI 생태계에서 심리 상담이라는 거대한 도메인을 확실하게 장악할 기회입니다.','text-zinc-300');addSpacer('4px');
+    const e1=document.createElement('div');e1.className='text-amber-400 font-bold my-1';O.appendChild(e1);await typeText(e1,'나중에 어떻게 될지 모르는 조건부 스톡옵션을 제시하지 않습니다.',15);scroll();
+    const e2=document.createElement('div');e2.className='text-green-400 font-bold text-base sm:text-lg my-2';O.appendChild(e2);await typeText(e2,'시작과 동시에 확실한 지분(Equity)을 드립니다.',20);scroll();
+    addSpacer('4px');
+    await addTypedLine('제약에 얽매이지 않고, 머릿속에 그리는 AI 아키텍처를 마음껏 개발할 수 있는 완벽한 환경을 보장합니다.','text-zinc-300');
+
+    addSpacer();addEnterHint();addSpacer('20px');enableInput();
+  }
+
+  async function cmdS6(){
+    disableInput();
+    addSectionMarker(5,'합류하기');
+    await renderAscii(asciiJoin);addSpacer();
+
+    await addTypedLine('[system] 스크립트 실행 중...','text-zinc-500',20);addSpacer('4px');
+    const pc=document.createElement('div');pc.className='ml-2 mb-2';
+    pc.innerHTML='<div class="flex items-center gap-x-2"><span class="text-zinc-500 text-xs">[</span><div class="w-48 h-2 bg-zinc-800 rounded-full overflow-hidden"><div id="pb" class="h-full bg-green-400 rounded-full" style="width:0%;transition:width 1.5s ease-in-out"></div></div><span class="text-zinc-500 text-xs">]</span><span id="pp" class="text-green-400 text-xs">0%</span></div>';
+    O.appendChild(pc);scroll();await delay(100);
+    document.getElementById('pb').style.width='100%';
+    for(const s of[10,25,50,75,90,100]){await delay(200);document.getElementById('pp').textContent=s+'%'}
     await delay(300);
 
     addSpacer();
-    addLine('<span class="text-zinc-600">사용 가능한 명령어를 보려면 </span><span class="cmd-clickable text-cyan-400" data-cmd="help">help</span><span class="text-zinc-600">를 입력하세요.</span>');
-    await delay(200);
+    addLine('<span class="text-green-500 font-bold">[system] 마스터플랜에 동참하시겠습니까? (Y/N)</span>');await delay(500);
+    const yl=document.createElement('div');yl.className='text-green-400 font-bold text-lg';O.appendChild(yl);await typeText(yl,'> Y',80);scroll();await delay(400);
+    addSpacer();addLine('<span class="text-green-500 font-bold">✓ [system] 권한이 승인되었습니다.</span>');addSpacer();
+    addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
 
-    addSpacer('20px');
+    addLine('<span class="text-green-400 font-bold text-base">═══ 면접이 아닌, 티타임을 제안합니다 ═══</span>');addSpacer();
+    await addTypedLine('각 잡힌 이력서와 정식 지원은 필요 없습니다.','text-zinc-300');
+    await addTypedLine('그저 가벼운 마음으로 커피 한 잔 마시며 이야기 나누고 싶습니다.','text-zinc-300');addSpacer('4px');
+    const vl=document.createElement('div');vl.className='text-cyan-400 font-bold my-1';O.appendChild(vl);await typeText(vl,'계신 곳이 어디든 제가 직접 찾아가겠습니다.',20);scroll();
+    await addTypedLine('우리가 그리는 비전과 재미있는 이야기들을 남김없이 들려드리겠습니다.','text-zinc-300');
 
-    enableInput();
-  }
-
-  // --- help ---
-  async function cmdHelp() {
-    disableInput();
-    addPromptLine('help');
+    addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
+    addLine('<span class="text-zinc-400">언제든 편하게 연락해 주세요:</span>');addSpacer('8px');
+    addLine('<span class="ml-4 text-zinc-500">연락처:</span> <span class="text-green-400 font-bold">010-7338-4843</span> <span class="text-zinc-600">(문자/카카오톡)</span>');
+    addLine('<span class="ml-4 text-zinc-500">이메일:</span> <span class="text-green-400">honam.kang@mindfullabs.ai</span>');
+    addLine('<span class="ml-4 text-zinc-500">링크드인:</span> <a href="https://www.linkedin.com/in/honam-kang/" target="_blank" rel="noopener" class="text-cyan-400 hover:underline">linkedin.com/in/honam-kang</a>');
     addSpacer();
-
-    await addTypedLine('사용 가능한 명령어:', 'text-zinc-400', 25);
-    addSpacer('8px');
-
-    const commands = [
-      { cmd: 'cat vision.md', desc: '마인드풀랩스의 비전과 미션' },
-      { cmd: 'cat architecture.md', desc: 'CTO가 풀어야 할 기술적 도전' },
-      { cmd: 'cat whoami.md', desc: '우리가 찾는 사람' },
-      { cmd: './apply.sh', desc: '합류하기' },
-      { cmd: 'ls', desc: '파일 목록 보기' },
-      { cmd: 'clear', desc: '터미널 초기화' },
-    ];
-
-    for (const c of commands) {
-      const div = document.createElement('div');
-      div.className = 'flex items-start ml-2 mb-1';
-      div.innerHTML =
-        '<span class="cmd-clickable text-cyan-400 w-48 shrink-0" data-cmd="' + escapeHtml(c.cmd) + '">' + escapeHtml(c.cmd) + '</span>' +
-        '<span class="text-zinc-500">' + escapeHtml(c.desc) + '</span>';
-      outputContainer.appendChild(div);
-      scrollToBottom();
-      await delay(80);
-    }
-
-    addSpacer();
-    addLine('<span class="text-zinc-600">hint: try typing </span><span class="cmd-clickable text-amber-400" data-cmd="stack">\'stack\'</span>');
-
-    addSpacer('20px');
-    enableInput();
-  }
-
-  // --- ls ---
-  async function cmdLs() {
-    disableInput();
-    addPromptLine('ls');
-    addSpacer();
-
-    const files = [
-      { name: 'vision.md', color: 'text-green-400' },
-      { name: 'architecture.md', color: 'text-green-400' },
-      { name: 'whoami.md', color: 'text-green-400' },
-      { name: 'apply.sh', color: 'text-red-400' },
-    ];
-
-    let line = '<span class="text-zinc-500">total ' + files.length + '</span>';
-    addLine(line);
-    addSpacer('4px');
-
-    for (const f of files) {
-      const ext = f.name.endsWith('.sh') ? '-rwxr-xr-x' : '-rw-r--r--';
-      const div = document.createElement('div');
-      div.className = 'ml-2 mb-0.5';
-      div.innerHTML =
-        '<span class="text-zinc-600">' + ext + '  cto  </span>' +
-        '<span class="' + f.color + '">' + f.name + '</span>';
-      outputContainer.appendChild(div);
-      scrollToBottom();
-      await delay(100);
-    }
-
-    addSpacer('20px');
-    enableInput();
-  }
-
-  // --- clear ---
-  function cmdClear() {
-    outputContainer.innerHTML = '';
-    enableInput();
-  }
-
-  // --- cat vision.md ---
-  async function cmdVision() {
-    disableInput();
-    addPromptLine('cat vision.md');
-    addSpacer();
-
-    // ASCII Art
-    const asciiArt = [
-      '███╗   ███╗██╗███╗   ██╗██████╗ ███████╗██╗   ██╗██╗     ',
-      '████╗ ████║██║████╗  ██║██╔══██╗██╔════╝██║   ██║██║     ',
-      '██╔████╔██║██║██╔██╗ ██║██║  ██║█████╗  ██║   ██║██║     ',
-      '██║╚██╔╝██║██║██║╚██╗██║██║  ██║██╔══╝  ██║   ██║██║     ',
-      '██║ ╚═╝ ██║██║██║ ╚████║██████╔╝██║     ╚██████╔╝███████╗',
-      '╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝ ╚═╝      ╚═════╝ ╚══════╝',
-    ];
-    const asciiArt2 = [
-      '██╗      █████╗ ██████╗ ███████╗',
-      '██║     ██╔══██╗██╔══██╗██╔════╝',
-      '██║     ███████║██████╔╝███████╗',
-      '██║     ██╔══██║██╔══██╗╚════██║',
-      '███████╗██║  ██║██████╔╝███████║',
-      '╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝',
-    ];
-
-    const artContainer = document.createElement('div');
-    artContainer.className = 'overflow-x-hidden text-xs sm:text-sm text-green-400 font-mono leading-tight whitespace-pre';
-    outputContainer.appendChild(artContainer);
-
-    for (const line of asciiArt) {
-      const div = document.createElement('div');
-      div.className = 'overflow-x-hidden';
-      div.textContent = line;
-      artContainer.appendChild(div);
-      scrollToBottom();
-      await delay(60);
-    }
-
-    const artContainer2 = document.createElement('div');
-    artContainer2.className = 'overflow-x-hidden text-xs sm:text-sm text-green-400 font-mono leading-tight whitespace-pre mt-1';
-    outputContainer.appendChild(artContainer2);
-
-    for (const line of asciiArt2) {
-      const div = document.createElement('div');
-      div.className = 'overflow-x-hidden';
-      div.textContent = line;
-      artContainer2.appendChild(div);
-      scrollToBottom();
-      await delay(60);
-    }
-
-    addSpacer();
-
-    // Tagline box
-    const tagBox = document.createElement('div');
-    tagBox.className = 'self-start border-2 border-green-400 px-4 py-3 mb-4';
-    tagBox.innerHTML = '<div class="flex items-center gap-x-2 text-green-400"><span>✱</span><span>상담사는 오직 상담에만.</span></div>';
-    outputContainer.appendChild(tagBox);
-    scrollToBottom();
-    await delay(500);
-
-    addSpacer();
-
-    // Vision text
-    await addTypedLine('우리는 단순한 차트 기록 보조 도구를 만들지 않습니다.', 'text-zinc-300', 25);
-    addSpacer('8px');
-    await addTypedLine('일정, 결제, 심리검사 분석, 고객 관리(CRM)까지', 'text-zinc-300', 25);
-    await addTypedLine('상담소 운영의 A to Z를 완전히 자동화하는', 'text-zinc-300', 25);
-    addSpacer('4px');
-
-    const highlightLine = document.createElement('div');
-    highlightLine.className = 'text-green-400 font-bold text-base sm:text-lg my-2';
-    highlightLine.textContent = '';
-    outputContainer.appendChild(highlightLine);
-    await typeText(highlightLine, '심리 상담 산업의 운영체제(OS)를 구축합니다.', 35);
-    scrollToBottom();
-
-    addSpacer();
-
-    // Separator
-    addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');
-    addSpacer();
-
-    await addTypedLine('기술로 멘탈헬스케어 시장의 패러다임을 바꿀 준비가 되셨습니까?', 'text-cyan-400', 30);
-
-    addSpacer();
-    addCommandHint('다음:', 'cat architecture.md');
-    addSpacer('20px');
-    enableInput();
-  }
-
-  // --- cat architecture.md ---
-  async function cmdArchitecture() {
-    disableInput();
-    addPromptLine('cat architecture.md');
-    addSpacer();
-
-    addLine('<span class="text-green-400 font-bold text-base">═══ ARCHITECTURE.MD ═══</span>');
-    addSpacer();
-    await addTypedLine('CTO가 해결해야 할 핵심 기술 과제:', 'text-zinc-400', 25);
-    addSpacer();
-
-    // Challenge 1
-    addLine('<span class="text-red-400 font-bold">  [01] Full AI Agent Workflow</span>');
-    addSpacer('4px');
-    await addTypedLine('       단일 LLM 호출을 넘어,', 'text-zinc-300', 25);
-    await addTypedLine('       다중 AI 에이전트가 유기적으로 상호작용하는', 'text-zinc-300', 25);
-    await addTypedLine('       도메인 특화 자동화 인프라(Harness) 설계', 'text-zinc-300', 25);
-    addSpacer();
-
-    // Challenge 2
-    addLine('<span class="text-red-400 font-bold">  [02] Global Scale Architecture</span>');
-    addSpacer('4px');
-    await addTypedLine('       글로벌 진출을 대비한 무결점 보안 아키텍처 및', 'text-zinc-300', 25);
-    await addTypedLine('       다국어 지원 클라우드 시스템 확장', 'text-zinc-300', 25);
-    await addTypedLine('       (AWS, Supabase 연동)', 'text-zinc-500', 25);
-    addSpacer();
-
-    // Challenge 3
-    addLine('<span class="text-red-400 font-bold">  [03] Industry Standard Creation</span>');
-    addSpacer('4px');
-    await addTypedLine('       심리 상담 도메인에 최적화된', 'text-zinc-300', 25);
-    await addTypedLine('       워크플로우 자동화 파이프라인 구축', 'text-zinc-300', 25);
-    addSpacer();
-
-    // Separator
-    addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');
-    addSpacer();
-
-    const impactLine = document.createElement('div');
-    impactLine.className = 'text-cyan-400 font-bold';
-    impactLine.textContent = '';
-    outputContainer.appendChild(impactLine);
-    await typeText(impactLine, '당신이 짤 코드가 곧 심리 상담 업계의 새로운 글로벌 표준이 됩니다.', 35);
-    scrollToBottom();
-
-    addSpacer();
-    addCommandHint('다음:', 'cat whoami.md');
-    addSpacer('20px');
-    enableInput();
-  }
-
-  // --- cat whoami.md ---
-  async function cmdWhoami() {
-    disableInput();
-    addPromptLine('cat whoami.md');
-    addSpacer();
-
-    addLine('<span class="text-green-400 font-bold text-base">═══ WHOAMI.MD ═══</span>');
-    addSpacer();
-
-    // Looking for
-    addLine('<span class="text-emerald-400 font-bold">✓ 우리는 이런 분을 찾습니다:</span>');
-    addSpacer('8px');
-
-    const positives = [
-      '단순한 기능 구현이 아닌, 비즈니스 구조를 이해하고 시스템을 설계하는 아키텍트',
-      '복잡한 문제를 비동기 파이프라인과 워크플로우로 우아하게 풀어내는 분',
-      '주니어 팀원들을 이끌고 글로벌 스케일의 개발 문화를 함께 만들어갈 리더',
-    ];
-
-    for (const item of positives) {
-      const div = document.createElement('div');
-      div.className = 'ml-4 flex items-start gap-x-2 mb-1.5 text-zinc-300';
-      div.innerHTML = '<span class="shrink-0 text-emerald-400 mt-0.5">✓</span><span class="flex-1">' + escapeHtml(item) + '</span>';
-      outputContainer.appendChild(div);
-      scrollToBottom();
-      await delay(150);
-    }
-
-    addSpacer();
-    addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');
-    addSpacer();
-
-    // Not a fit
-    addLine('<span class="text-red-400 font-bold">✕ 이런 분과는 맞지 않습니다:</span>');
-    addSpacer('8px');
-
-    const negatives = [
-      '만들어진 기획서대로만 코딩하는 것에 익숙한 분',
-      'AI를 수동적인 도구로만 바라보는 분',
-    ];
-
-    for (const item of negatives) {
-      const div = document.createElement('div');
-      div.className = 'ml-4 flex items-start gap-x-2 mb-1.5 text-zinc-300';
-      div.innerHTML = '<span class="shrink-0 text-red-400 mt-0.5">✕</span><span class="flex-1">' + escapeHtml(item) + '</span>';
-      outputContainer.appendChild(div);
-      scrollToBottom();
-      await delay(150);
-    }
-
-    addSpacer();
-    addCommandHint('준비 되셨나요?', './apply.sh');
-    addSpacer('20px');
-    enableInput();
-  }
-
-  // --- ./apply.sh ---
-  async function cmdApply() {
-    disableInput();
-    addPromptLine('./apply.sh');
-    addSpacer();
-
-    await addTypedLine('[system] 스크립트 실행 중...', 'text-zinc-500', 30);
-    addSpacer('4px');
-
-    // Progress bar
-    const progressContainer = document.createElement('div');
-    progressContainer.className = 'ml-2 mb-2';
-    progressContainer.innerHTML =
-      '<div class="flex items-center gap-x-2">' +
-        '<span class="text-zinc-500 text-xs">[</span>' +
-        '<div class="w-48 h-2 bg-zinc-800 rounded-full overflow-hidden">' +
-          '<div id="progress-bar" class="h-full bg-green-400 rounded-full" style="width: 0%; transition: width 1.5s ease-in-out;"></div>' +
-        '</div>' +
-        '<span class="text-zinc-500 text-xs">]</span>' +
-        '<span id="progress-pct" class="text-green-400 text-xs">0%</span>' +
-      '</div>';
-    outputContainer.appendChild(progressContainer);
-    scrollToBottom();
-
-    // Animate progress
-    await delay(100);
-    const bar = document.getElementById('progress-bar');
-    const pct = document.getElementById('progress-pct');
-    bar.style.width = '100%';
-
-    // Simulate percentage updates
-    const steps = [10, 25, 50, 75, 90, 100];
-    for (const s of steps) {
-      await delay(250);
-      pct.textContent = s + '%';
-    }
-
-    await delay(500);
-
-    addSpacer();
-    addLine('<span class="text-green-500 font-bold">✓ [system] 권한이 승인되었습니다.</span>');
-    addSpacer();
-
-    await addTypedLine('이력서보다 당신이 지금까지 구축해온 아키텍처나,', 'text-zinc-300', 25);
-    await addTypedLine('가장 자랑스러운 기술적 문제 해결 경험을 들려주세요.', 'text-zinc-300', 25);
-    addSpacer();
-
     addLine('<span class="text-zinc-500">메일 제목 양식:</span>');
-    addLine('<span class="text-cyan-400 font-bold">  [CTO 지원] sudo join mindfullabs - (이름)</span>');
-    addSpacer();
-
-    // Apply button
-    const btnDiv = document.createElement('div');
-    btnDiv.className = 'ml-2';
-    btnDiv.innerHTML = '<a href="mailto:honam.kang@mindfullabs.ai?subject=%5BCTO%20%EC%A7%80%EC%9B%90%5D%20sudo%20join%20mindfullabs%20-%20" class="apply-btn">$ sudo join mindfullabs →</a>';
-    outputContainer.appendChild(btnDiv);
-    scrollToBottom();
-
-    addSpacer();
-    addLine('<span class="text-zinc-600">[system] vibe-coded by honam.kang@mindfullabs.ai × Claude Opus 4.6</span>');
-
-    addSpacer('20px');
-    enableInput();
+    addLine('<span class="text-cyan-400 font-bold ml-2">[CTO 지원] sudo join mindfullabs - (이름)</span>');addSpacer();
+    const bd=document.createElement('div');bd.className='ml-2';
+    bd.innerHTML='<a href="mailto:honam.kang@mindfullabs.ai?subject=%5BCTO%20%EC%A7%80%EC%9B%90%5D%20sudo%20join%20mindfullabs%20-%20" class="apply-btn">$ sudo join mindfullabs →</a>';
+    O.appendChild(bd);scroll();
+    addSpacer();addLine('<span class="text-zinc-600">[system] vibe-coded by honam.kang@mindfullabs.ai × Claude Opus 4.6</span>');
+    addSpacer('20px');enableInput();
   }
 
-  // --- stack (easter egg) ---
-  async function cmdStack() {
-    disableInput();
-    addPromptLine('stack');
-    addSpacer();
-
-    addLine('<span class="text-zinc-500">// 마음토스 기술 스택</span>');
-    addSpacer('4px');
-
-    const json = [
-      '{',
-      '  <span class="text-cyan-400">"product"</span>: <span class="text-amber-400">"마음토스 (Maumtoss)"</span>,',
-      '  <span class="text-cyan-400">"runtime"</span>: <span class="text-amber-400">"Node.js"</span>,',
-      '  <span class="text-cyan-400">"database"</span>: <span class="text-amber-400">"Supabase (PostgreSQL)"</span>,',
-      '  <span class="text-cyan-400">"frontend"</span>: <span class="text-amber-400">"React 19"</span>,',
-      '  <span class="text-cyan-400">"cloud"</span>: <span class="text-amber-400">"AWS"</span>,',
-      '  <span class="text-cyan-400">"ai"</span>: <span class="text-amber-400">"Multi-Agent LLM Pipeline"</span>,',
-      '  <span class="text-cyan-400">"auth"</span>: <span class="text-amber-400">"Supabase Auth"</span>,',
-      '  <span class="text-cyan-400">"status"</span>: <span class="text-red-400">"hiring_cto"</span>,',
-      '  <span class="text-cyan-400">"open_positions"</span>: <span class="text-green-400">1</span>',
-      '}',
-    ];
-
-    for (const line of json) {
-      addLine('<span class="text-zinc-300">' + line + '</span>', 'ml-2');
-      scrollToBottom();
-      await delay(80);
+  // ==========================================
+  // COMMAND ROUTER
+  // ==========================================
+  async function executeCommand(cmd){
+    disableInput();I.value='';updateCursor();closeNav();removeEnterHints();
+    const t=cmd.trim().toLowerCase();
+    for(const s of sections){
+      if(t===s.cmd){
+        addPromptLine(s.cmd);
+        currentSection=Math.max(currentSection,s.idx+1);
+        await runSection(s.idx);
+        return;
+      }
     }
-
-    addSpacer('20px');
-    enableInput();
-  }
-
-  // --- Unknown command ---
-  async function cmdUnknown(cmd) {
-    addPromptLine(cmd);
-    addSpacer('4px');
-    addLine('<span class="text-red-400">bash: ' + escapeHtml(cmd) + ': command not found</span>');
-    addSpacer('4px');
-    addLine('<span class="text-zinc-600">사용 가능한 명령어를 보려면 </span><span class="cmd-clickable text-cyan-400" data-cmd="help">help</span><span class="text-zinc-600">를 입력하세요.</span>');
-    addSpacer('20px');
-    enableInput();
-  }
-
-  // === COMMAND ROUTER ===
-  async function executeCommand(cmd) {
-    disableInput();
-    cmdInput.value = '';
-    updateCursorPosition();
-
-    const trimmed = cmd.trim().toLowerCase();
-
-    switch (trimmed) {
-      case 'help':
-        await cmdHelp();
-        break;
-      case 'cat vision.md':
-        await cmdVision();
-        break;
-      case 'cat architecture.md':
-        await cmdArchitecture();
-        break;
-      case 'cat whoami.md':
-        await cmdWhoami();
-        break;
-      case './apply.sh':
-        await cmdApply();
-        break;
-      case 'stack':
-        await cmdStack();
-        break;
-      case 'ls':
-      case 'ls -la':
-      case 'ls -l':
-      case 'dir':
-        await cmdLs();
-        break;
-      case 'clear':
-      case 'cls':
-        cmdClear();
-        enableInput();
-        break;
-      default:
-        await cmdUnknown(cmd);
-        break;
+    switch(t){
+      case 'help':await cmdHelp();break;
+      case 'stack':await cmdStack();break;
+      case 'ls':case 'ls -la':case 'ls -l':case 'dir':await cmdLs();break;
+      case 'clear':case 'cls':cmdClear();enableInput();break;
+      default:cmdUnknown(cmd);break;
     }
   }
 
-  // === BOOT ===
   bootSequence();
-
 })();
 </script>
 </body>
