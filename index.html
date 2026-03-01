@@ -626,20 +626,28 @@
     addSectionMarker(4,'자격 요건 및 보상');
     await renderAscii(asciiRecruit);addSpacer();
 
+    addLine('<span class="text-green-400 font-bold text-base">═══ 우리가 찾는 사람 ═══</span>');addSpacer();
+    await addTypedLine('우리는 기술 자체에 매몰된 엔지니어가 아닌,','text-zinc-300');
+    const sv=document.createElement('div');sv.className='text-cyan-400 font-bold my-1';O.appendChild(sv);
+    await typeText(sv,'기술을 통해 사용자의 문제를 해결하는 데 진심인 사람을 찾습니다.',20);scroll();
+    addSpacer('4px');
+    await addTypedLine('가장 세련된 아키텍처보다, 상담사가 내일 당장 편해지는 한 줄의 코드가 더 가치 있습니다.','text-zinc-300');
+    await addTypedLine('기술은 수단이고, 서비스가 목적입니다. 이 우선순위에 공감하는 분을 기다립니다.','text-zinc-300');
+
+    addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
     addLine('<span class="text-green-400 font-bold text-base">═══ 자격 요건 ═══</span>');addSpacer();
-    const qs=['백엔드 개발 실무 경력 5년 이상 또는 그에 준하는 아키텍처 설계 역량을 갖추신 분','Node.js 및 TypeScript 기반의 백엔드 생태계에 대한 깊은 전문성을 보유하신 분','복잡한 비즈니스 로직을 API 및 시스템으로 설계하고 구현해 본 경험이 있으신 분','단순한 LLM API 호출을 넘어, AI Agent 기반의 자동화 워크플로우를 고민하고 설계해 본 분','비즈니스 문제 해결을 최우선으로 두고, 주도적으로 글로벌 스케일의 시스템을 구축하고자 하는 열정이 있는 분'];
-    for(const q of qs){addLine('<div class="ml-4 flex items-start gap-x-2 mb-1.5 text-zinc-300"><span class="shrink-0 text-emerald-400 mt-0.5">✓</span><span class="flex-1">'+esc(q)+'</span></div>');await delay(60)}
+    const qs=['백엔드 개발 실무 경력 4년 이상 또는 그에 준하는 아키텍처 설계 역량을 갖추신 분','Node.js 및 TypeScript 기반의 백엔드 생태계에 대한 깊은 전문성을 보유하신 분','복잡한 비즈니스 로직을 API 및 시스템으로 설계하고 구현해 본 경험이 있으신 분','단순한 LLM API 호출을 넘어, AI Agent 기반의 자동화 워크플로우를 고민하고 설계해 본 분','비즈니스 문제 해결을 최우선으로 두고, 주도적으로 글로벌 스케일의 시스템을 구축하고자 하는 열정이 있는 분'];
+    for(const q of qs){await addTypedLine('  ✓ '+q,'text-zinc-300',10);addSpacer('4px')}
 
     addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
     addLine('<span class="text-green-400 font-bold text-base">═══ 우대 사항 ═══</span>');addSpacer();
     const ps=['글로벌 서비스 런칭 경험 또는 다국어/멀티 리전 인프라 설계 경험이 있으신 분','복잡한 결제 연동, 캘린더 동기화 등 외부 API 통합 경험이 풍부하신 분','B2B SaaS 프로덕트 또는 업무 자동화 관련 서비스를 처음부터 구축해 본 경험이 있으신 분','민감한 의료/심리 데이터를 위한 글로벌 수준의 데이터 보안 및 컴플라이언스 대응에 관심이 있으신 분'];
-    for(const p of ps){addLine('<div class="ml-4 flex items-start gap-x-2 mb-1.5 text-zinc-300"><span class="shrink-0 text-cyan-400 mt-0.5">+</span><span class="flex-1">'+esc(p)+'</span></div>');await delay(60)}
+    for(const p of ps){await addTypedLine('  + '+p,'text-zinc-300',10);addSpacer('4px')}
 
     addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
     addLine('<span class="text-green-400 font-bold text-base">═══ 현재 기술 스택 ═══</span>');addSpacer();
-    [{l:'Backend',v:'Node.js, TypeScript, Supabase, PostgreSQL'},{l:'Frontend',v:'React 19, Vite, Tailwind CSS (주니어 FE 담당)'},{l:'Cloud & DevOps',v:'AWS, Docker, GitHub Actions'},{l:'AI & Media',v:'FFmpeg, OpenAI API, Google Gemini API'}].forEach(s=>{
-      addLine('<span class="ml-4"><span class="text-cyan-400">'+esc(s.l)+':</span> <span class="text-amber-400">'+esc(s.v)+'</span></span>');
-    });
+    const stacks=[{l:'Backend',v:'Node.js, TypeScript, Supabase, PostgreSQL'},{l:'Frontend',v:'React 19, Vite, Tailwind CSS (주니어 FE 담당)'},{l:'Cloud & DevOps',v:'AWS, Docker, GitHub Actions'},{l:'AI & Media',v:'FFmpeg, OpenAI API, Google Gemini API'}];
+    for(const s of stacks){await addTypedLine('  '+s.l+': '+s.v,'text-zinc-300',10);addSpacer('4px')}
 
     addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
     addLine('<span class="text-green-400 font-bold text-base">═══ 파격적인 보상: 확실한 지분 ═══</span>');addSpacer();
@@ -688,6 +696,16 @@
     const bd=document.createElement('div');bd.className='ml-2';
     bd.innerHTML='<a href="mailto:honam.kang@mindfullabs.ai?subject=%5BCTO%20%EC%A7%80%EC%9B%90%5D%20sudo%20join%20mindfullabs%20-%20" class="apply-btn">$ sudo join mindfullabs →</a>';
     O.appendChild(bd);scroll();
+
+    addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
+    addLine('<span class="text-green-400 font-bold text-base">═══ 추천 보상금 제도 ═══</span>');addSpacer();
+    await addTypedLine('직접 지원이 아니더라도 괜찮습니다.','text-zinc-300');
+    await addTypedLine('주변에 이 포지션에 어울리는 분이 계시다면, 꼭 소개해 주세요.','text-zinc-300');addSpacer('4px');
+    const rf=document.createElement('div');rf.className='text-amber-400 font-bold text-base sm:text-lg my-2';O.appendChild(rf);
+    await typeText(rf,'추천하신 분이 최종 채용되면, 추천 보상금 100만 원을 드립니다.',20);scroll();
+    addSpacer('4px');
+    await addTypedLine('좋은 분들에게 많이 소개해 주세요. 함께할 동료를 찾는 데 큰 힘이 됩니다.','text-zinc-300');
+
     addSpacer();addLine('<span class="text-zinc-600">[system] vibe-coded by honam.kang@mindfullabs.ai × Claude Opus 4.6</span>');
     addSpacer('20px');enableInput();
   }
