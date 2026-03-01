@@ -459,7 +459,7 @@
   async function cmdStack(){
     disableInput();addPromptLine('stack');addSpacer();
     addLine('<span class="text-zinc-500">// 마음토스 기술 스택</span>');addSpacer('4px');
-    const j=['{','  <span class="text-cyan-400">"product"</span>: <span class="text-amber-400">"마음토스 (Maumtoss)"</span>,','  <span class="text-cyan-400">"runtime"</span>: <span class="text-amber-400">"Node.js"</span>,','  <span class="text-cyan-400">"database"</span>: <span class="text-amber-400">"Supabase (PostgreSQL)"</span>,','  <span class="text-cyan-400">"frontend"</span>: <span class="text-amber-400">"React 19"</span>,','  <span class="text-cyan-400">"cloud"</span>: <span class="text-amber-400">"AWS"</span>,','  <span class="text-cyan-400">"ai"</span>: <span class="text-amber-400">"Multi-Agent LLM Pipeline"</span>,','  <span class="text-cyan-400">"status"</span>: <span class="text-red-400">"hiring_cto"</span>,','  <span class="text-cyan-400">"open_positions"</span>: <span class="text-green-400">1</span>','}'];
+    const j=['{','  <span class="text-cyan-400">"product"</span>: <span class="text-amber-400">"마음토스 (Mindthos)"</span>,','  <span class="text-cyan-400">"runtime"</span>: <span class="text-amber-400">"Node.js"</span>,','  <span class="text-cyan-400">"database"</span>: <span class="text-amber-400">"Supabase (PostgreSQL)"</span>,','  <span class="text-cyan-400">"frontend"</span>: <span class="text-amber-400">"React 19"</span>,','  <span class="text-cyan-400">"cloud"</span>: <span class="text-amber-400">"AWS"</span>,','  <span class="text-cyan-400">"ai"</span>: <span class="text-amber-400">"Multi-Agent LLM Pipeline"</span>,','  <span class="text-cyan-400">"status"</span>: <span class="text-red-400">"hiring_cto"</span>,','  <span class="text-cyan-400">"open_positions"</span>: <span class="text-green-400">1</span>','}'];
     for(const l of j){addLine('<span class="text-zinc-300">'+l+'</span>','ml-2');await delay(40)}
     addSpacer('20px');enableInput();
   }
@@ -650,11 +650,16 @@
     for(const s of stacks){await addTypedLine('  '+s.l+': '+s.v,'text-zinc-300',10);addSpacer('4px')}
 
     addSpacer();addLine('<span class="text-neutral-600">──────────────────────────────────────────────────</span>');addSpacer();
-    addLine('<span class="text-green-400 font-bold text-base">═══ 파격적인 보상: 확실한 지분 ═══</span>');addSpacer();
-    await addTypedLine('AI 생태계에서 심리 상담이라는 거대한 도메인을 확실하게 장악할 기회입니다.','text-zinc-300');addSpacer('4px');
+    addLine('<span class="text-green-400 font-bold text-base">═══ 보상 패키지 ═══</span>');addSpacer();
+    await addTypedLine('최고의 인재에게는 최고의 대우가 따라야 합니다.','text-zinc-300');
+    await addTypedLine('현재 받고 계신 연봉 패키지를 기준으로 동등하게 맞춰드립니다.','text-zinc-300');addSpacer('4px');
+    const e0=document.createElement('div');e0.className='text-cyan-400 font-bold my-1';O.appendChild(e0);await typeText(e0,'이직으로 인한 처우 하락은 없습니다. 그건 저희가 보장합니다.',18);scroll();
+    addSpacer();
+    await addTypedLine('여기에 더해,','text-zinc-300');
     const e1=document.createElement('div');e1.className='text-amber-400 font-bold my-1';O.appendChild(e1);await typeText(e1,'나중에 어떻게 될지 모르는 조건부 스톡옵션을 제시하지 않습니다.',15);scroll();
     const e2=document.createElement('div');e2.className='text-green-400 font-bold text-base sm:text-lg my-2';O.appendChild(e2);await typeText(e2,'시작과 동시에 확실한 지분(Equity)을 드립니다.',20);scroll();
     addSpacer('4px');
+    await addTypedLine('급여 + 지분. 둘 다 확실하게 가져가실 수 있습니다.','text-zinc-300');
     await addTypedLine('제약에 얽매이지 않고, 머릿속에 그리는 AI 아키텍처를 마음껏 개발할 수 있는 완벽한 환경을 보장합니다.','text-zinc-300');
 
     addSpacer();addEnterHint();addSpacer('20px');enableInput();
